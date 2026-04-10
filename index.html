@@ -587,6 +587,14 @@ tbody tr:hover{background:var(--bg)}
     <!-- BRANCHES (SA only) -->
     <div class="pg" id="pg-buyers">
       <div class="pg-head"><div><h2>Branches</h2><div class="pg-sub" id="buyers-sub"></div></div><button class="btn btn-b btn-sm" onclick="openBuyerModal()">+ Add Branch</button></div>
+      <!-- Firestore rules reminder for SA -->
+      <div id="rules-warn" style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:.82rem;color:#92400E;display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:1.1rem">⚠️</span>
+        <div>
+          <strong>If branches are not saving:</strong> Go to <a href="https://console.firebase.google.com/project/fujup-venture/firestore/rules" target="_blank" style="color:#2563EB;font-weight:700">Firebase Console → Firestore → Rules</a> and set rules to <code style="background:#FEF3C7;padding:1px 4px;border-radius:4px">allow read, write: if true;</code> for all documents. This is required for the system to save data.
+          <button onclick="g('rules-warn').style.display='none'" style="margin-left:10px;font-size:.75rem;color:#6B7280;cursor:pointer;background:none;border:none;text-decoration:underline">Dismiss</button>
+        </div>
+      </div>
       <div id="buyers-overview" class="sg" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px">
         <div class="sc"><div class="sc-icon" style="background:#EDE9FE">🏢</div><div><div class="label">Total Branches</div><div class="value" id="sa-b">0</div></div></div>
         <div class="sc"><div class="sc-icon" style="background:#EFF6FF">📦</div><div><div class="label">All Products</div><div class="value" id="sa-p">0</div></div></div>
@@ -816,7 +824,7 @@ tbody tr:hover{background:var(--bg)}
       <div class="fu fg2"><label class="fl">Branch Name *</label><input class="fc" id="bm-name" placeholder="Fujup Venture — Main Branch"/></div>
       <div class="fg2"><label class="fl">Admin Email *</label><input class="fc" type="email" id="bm-email" placeholder="admin@fujupventure.com"/></div>
       <div class="fg2"><label class="fl">Admin Password *</label><input class="fc" type="password" id="bm-pass" placeholder="Min 6 chars"/></div>
-      <div class="fg2"><label class="fl">Branch PIN (4 digits) *</label><input class="fc" type="text" inputmode="numeric" id="bm-pin" maxlength="4" placeholder="e.g. 1234" autocomplete="off"/></div>
+      <div class="fg2"><label class="fl">Branch PIN (4 digits)</label><input class="fc" type="password" id="bm-pin" maxlength="4" placeholder="e.g. 1234"/></div>
       <div class="fg2"><label class="fl">Currency</label><input class="fc" id="bm-cur" value="₦" maxlength="3"/></div>
       <div class="fg2"><label class="fl">Type</label>
         <select class="fc" id="bm-type">
@@ -947,14 +955,49 @@ applyDark();
 
 // ── INIT ──────────────────────────────────────────
 async function initApp(){
+  // ── Step 1: Test Firestore connectivity with a simple write+read ──
   try {
-    // Sign in anonymously so Firestore security rules allow reads/writes
-    await auth.signInAnonymously();
-  } catch(e){ console.warn('Anonymous auth:', e.message); }
+    // Try writing a harmless test document to verify rules allow access
+    const testRef = db.collection('system').doc('_ping');
+    await testRef.set({t: Date.now()}, {merge: true});
+  } catch(e){
+    // Rules are blocking writes — show actionable message
+    g('loading').innerHTML = `
+      <div style="max-width:420px;background:#fff;border-radius:20px;padding:32px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+        <div style="font-size:2.5rem;margin-bottom:12px">🔒</div>
+        <div style="font-size:1.1rem;font-weight:800;color:#0F1F45;margin-bottom:8px">Firestore Access Blocked</div>
+        <div style="font-size:.85rem;color:#6B7280;margin-bottom:20px;line-height:1.6">
+          Your Firebase security rules are blocking this app.<br>
+          You need to update your Firestore rules to allow access.
+        </div>
+        <div style="background:#F0F4FF;border-radius:10px;padding:14px;font-size:.78rem;color:#1D4ED8;font-weight:600;text-align:left;margin-bottom:20px">
+          <div style="margin-bottom:6px;font-weight:800">📋 Steps to fix:</div>
+          <div>1. Go to <strong>console.firebase.google.com</strong></div>
+          <div>2. Open project <strong>fujup-venture</strong></div>
+          <div>3. Click <strong>Firestore Database → Rules</strong></div>
+          <div>4. Replace rules with the code below</div>
+          <div>5. Click <strong>Publish</strong></div>
+        </div>
+        <div style="background:#0F1F45;border-radius:10px;padding:14px;font-family:monospace;font-size:.78rem;color:#60A5FA;text-align:left;margin-bottom:20px;white-space:pre-wrap">rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}</div>
+        <div style="font-size:.75rem;color:#9CA3AF;margin-bottom:16px">After publishing the rules, refresh this page.</div>
+        <button onclick="location.reload()" style="background:#2563EB;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:.9rem;font-weight:700;cursor:pointer">🔄 Refresh Page</button>
+      </div>`;
+    return;
+  }
+
+  // ── Step 2: Load SA PIN ──
   try {
     const doc = await db.collection('system').doc('config').get();
     if(doc.exists && doc.data().sa_pin) SA_PIN = doc.data().sa_pin;
   } catch(e){ console.warn('SA pin load:', e.message); }
+
   g('loading').classList.add('h');
   show('lock-screen');
 }
@@ -983,20 +1026,14 @@ function pdel(){ pBuf=pBuf.slice(0,-1); pDots(); g('pin-err').classList.add('h')
 function pDots(){ for(let i=0;i<4;i++){const e=g('d'+i);if(!e)return;e.className='pd'+(i<pBuf.length?' on':'');} }
 async function pCheck(){
   try{
-    // Re-fetch SA_PIN from Firestore in case it was updated
-    try{
-      const cfgDoc = await db.collection('system').doc('config').get();
-      if(cfgDoc.exists && cfgDoc.data().sa_pin) SA_PIN = cfgDoc.data().sa_pin;
-    }catch(e){ console.warn('SA pin refresh:', e.message); }
-
-    const snap = await db.collection('buyers').where('pin','==',pBuf).get();
-    if(!snap.empty){
-      const bdoc = snap.docs[0];
-      const buyer = {id:bdoc.id,...bdoc.data()};
-      BID = buyer.id;
-      ME  = {id:'buyer-admin-'+BID, name:buyer.adminName||buyer.name||'Admin', role:'admin', buyerId:BID};
-      CFG = {bizName:buyer.name, currency:buyer.currency||'₦', threshold:buyer.threshold||10, address:buyer.address||''};
-      show('app'); setupApp(); toast('Welcome to '+buyer.name+' 👋','s');
+    // Scan all branches client-side — avoids Firestore index requirement
+    const snap = await db.collection('buyers').get();
+    const matched = snap.docs.map(d=>({id:d.id,...d.data()})).find(b=>String(b.pin||'')=== pBuf);
+    if(matched){
+      BID = matched.id;
+      ME  = {id:'buyer-admin-'+BID, name:matched.adminName||'Admin', role:'admin', buyerId:BID};
+      CFG = {bizName:matched.name, currency:matched.currency||'₦', threshold:matched.threshold||10, address:matched.address||''};
+      show('app'); setupApp(); toast('Welcome to '+matched.name+' 👋','s');
     } else {
       for(let i=0;i<4;i++){const e=g('d'+i);if(e){e.className='pd err';}}
       g('pin-err').classList.remove('h');
@@ -1168,14 +1205,12 @@ function closeSB(){ g('sidebar').classList.remove('open'); g('sb-ovl').classList
 // ── LOGOUT ─────────────────────────────────────────
 function logout(){
   UNSUBS.forEach(fn=>fn&&fn()); UNSUBS=[];
-  const wasSA = SA_MODE;
   ME=null; BID=null; SA_MODE=false;
   PRODS=[]; SALES=[]; NOTIFS=[]; STAFF=[]; BUYERS=[]; CUSTOMERS=[];
   pBuf=''; sBuf=''; pDots(); sDots();
   g('l-email').value=''; g('l-pass').value='';
   g('login-err').classList.add('h');
-  // Return SA to SA screen, staff to lock screen
-  if(wasSA){ show('sa-screen'); } else { show('lock-screen'); switchTab('login'); }
+  show('lock-screen'); switchTab('login');
 }
 
 function exitCtx(){
@@ -1984,15 +2019,7 @@ async function renderBuyers(){
 }
 
 async function enterBuyer(bid){
-  let buyer=BUYERS.find(b=>b.id===bid);
-  // If not in local array yet (e.g. just created), fetch from Firestore directly
-  if(!buyer){
-    try{
-      const doc = await db.collection('buyers').doc(bid).get();
-      if(doc.exists) buyer = {id:doc.id,...doc.data()};
-    }catch(e){ toast('Could not load branch: '+e.message,'e'); return; }
-  }
-  if(!buyer){ toast('Branch not found','e'); return; }
+  const buyer=BUYERS.find(b=>b.id===bid); if(!buyer)return;
   BID=bid;
   ME={id:'sa-in-buyer',name:'Super Admin',role:'admin',buyerId:bid};
   CFG={bizName:buyer.name,currency:buyer.currency||'₦',threshold:buyer.threshold||10,address:buyer.address||''};
@@ -2017,28 +2044,32 @@ function openBuyerModal(id){
 }
 async function saveBuyer(){
   const name=g('bm-name').value.trim(),email=g('bm-email').value.trim(),pass=g('bm-pass').value,pin=g('bm-pin').value.trim(),cur=g('bm-cur').value.trim()||'₦',type=g('bm-type').value,addr=g('bm-addr').value.trim(),eid=g('bm-id').value;
-  if(!name||!email)return ferr('bm-err','Name and email required.');
-  if(!eid&&!pass)return ferr('bm-err','Admin password required.');
-  if(pass&&pass.length<6)return ferr('bm-err','Password must be 6+ chars.');
-  // PIN is required for new branches so branch PIN login works
-  if(!eid&&!pin)return ferr('bm-err','Branch PIN is required (4 digits).');
-  if(pin&&!/^\d{4}$/.test(pin))return ferr('bm-err','PIN must be 4 digits.');
-  if(pin){const dup=await db.collection('buyers').where('pin','==',pin).get();if(!dup.empty&&(eid?dup.docs[0].id!==eid:true))return ferr('bm-err','PIN already used by another branch.');}
+  g('bm-err').classList.add('h');
+  if(!name||!email)return ferr('bm-err','Branch name and admin email are required.');
+  if(!eid&&!pass)return ferr('bm-err','Admin password is required for a new branch.');
+  if(pass&&pass.length<6)return ferr('bm-err','Password must be at least 6 characters.');
+  if(pin&&!/^\d{4}$/.test(pin))return ferr('bm-err','PIN must be exactly 4 digits (numbers only).');
+  // PIN uniqueness check — client-side scan (no Firestore index needed)
+  if(pin){
+    try{
+      const allSnap=await db.collection('buyers').get();
+      const pinUsed=allSnap.docs.some(d=>d.id!==eid && String(d.data().pin||'')=== pin);
+      if(pinUsed) return ferr('bm-err','That PIN is already in use. Choose a different PIN.');
+    }catch(e){ return ferr('bm-err','Could not verify PIN: '+e.message); }
+  }
   const data={name,adminEmail:email,adminName:'Admin',pin:pin||'',currency:cur,type,address:addr,threshold:10};
   if(pass) data.adminPassword=pass;
   try{
-    let newBuyerId = eid;
     if(eid){
       await db.collection('buyers').doc(eid).update(data);
       closeM('buyer-modal'); toast('Branch updated!','s');
     } else {
       const ref = await db.collection('buyers').add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-      newBuyerId = ref.id;
       closeM('buyer-modal');
-      toast('Branch created! 🎉 Entering inventory…','s');
-      setTimeout(()=>enterBuyer(newBuyerId), 800);
+      toast('Branch "'+name+'" created successfully! 🎉','s');
+      setTimeout(()=>enterBuyer(ref.id), 800);
     }
-  }catch(e){ferr('bm-err','Failed: '+e.message);}
+  }catch(e){ferr('bm-err','Save failed: '+e.message+' — Check your Firestore security rules.');}
 }
 async function deleteBuyer(id,name){
   if(!confirm('Delete branch "'+name+'"? ALL their data will be deleted permanently!'))return;
@@ -2058,14 +2089,17 @@ async function saveSettings(){
 
 async function changePIN(){
   if(!BID){toast('Enter a branch context first','e');return;}
-  const old=g('s-old').value,nw=g('s-new').value,cf=g('s-cf').value;
-  const buyer=BUYERS.find(b=>b.id===BID)||await db.collection('buyers').doc(BID).get().then(d=>d.data());
-  if(!buyer)return;
-  if(old!==(buyer.pin||''))return toast('Current PIN is incorrect','e');
-  if(!/^\d{4}$/.test(nw))return toast('PIN must be 4 digits','e');
+  const oldVal=g('s-old').value,nw=g('s-new').value,cf=g('s-cf').value;
+  const bdoc=await db.collection('buyers').doc(BID).get();
+  if(!bdoc.exists){toast('Branch not found','e');return;}
+  const buyer=bdoc.data();
+  if(oldVal!==(buyer.pin||''))return toast('Current PIN is incorrect','e');
+  if(!/^\d{4}$/.test(nw))return toast('New PIN must be 4 digits','e');
   if(nw!==cf)return toast('PINs do not match','e');
-  const dup=await db.collection('buyers').where('pin','==',nw).get();
-  if(!dup.empty&&dup.docs[0].id!==BID)return toast('PIN already used by another branch','e');
+  // Check PIN uniqueness client-side
+  const allSnap=await db.collection('buyers').get();
+  const pinUsed=allSnap.docs.some(d=>d.id!==BID && String(d.data().pin||'')=== nw);
+  if(pinUsed)return toast('That PIN is already used by another branch','e');
   try{await db.collection('buyers').doc(BID).update({pin:nw});g('s-old').value='';g('s-new').value='';g('s-cf').value='';toast('PIN updated!','s');}catch(e){toast('Failed: '+e.message,'e');}
 }
 
@@ -2132,6 +2166,17 @@ document.addEventListener('keydown',e=>{
   const appVis=!g('app').classList.contains('h');
   if(appVis&&e.key==='Enter'&&document.activeElement?.id==='l-pass')doLogin();
 });
+
+// ── FIRESTORE RULES CHECK ─────────────────────────
+// Make sure your Firestore rules in Firebase Console allow reads/writes.
+// For development, use:
+//   rules_version = '2';
+//   service cloud.firestore {
+//     match /databases/{database}/documents {
+//       match /{document=**} { allow read, write: if true; }
+//     }
+//   }
+// For production, tighten these rules after testing.
 
 console.log('%c Fujup Venture Inventory — Multi-Branch ✓','background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;padding:5px 12px;border-radius:5px;font-weight:700');
 </script>
