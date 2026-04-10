@@ -115,8 +115,6 @@ input,select,textarea{font-family:'Inter',sans-serif}
 .tb-icon:hover{background:var(--bg);color:var(--t1)}
 .tb-ndot{position:absolute;top:5px;right:5px;width:8px;height:8px;background:#EF4444;border-radius:50%;border:2px solid var(--surf)}
 .tb-av{width:34px;height:34px;border-radius:9px;background:#F59E0B;color:#0F1F45;font-weight:800;font-size:.84rem;display:flex;align-items:center;justify-content:center;cursor:pointer}
-/* branch selector in topbar */
-.branch-sel{padding:6px 10px;border:1.5px solid var(--bord);border-radius:var(--r2);font-size:.8rem;font-weight:600;background:var(--surf);color:var(--t1);outline:none;cursor:pointer;min-width:120px}
 
 /* ── PAGES ── */
 .pages{flex:1;overflow-y:auto}
@@ -341,32 +339,38 @@ tbody tr:hover{background:var(--bg)}
 .cart-remove{width:26px;height:26px;border-radius:7px;color:#EF4444;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:all .15s;background:transparent;border:none;flex-shrink:0}
 .cart-remove:hover{background:rgba(239,68,68,.1)}
 
-/* ── CUSTOMER CARDS ── */
-.cust-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);box-shadow:var(--sh);padding:16px;transition:transform .2s,box-shadow .2s}
+/* ── BRANCH SWITCHER ── */
+.branch-bar{display:flex;align-items:center;gap:6px;padding:8px 10px;margin:8px 10px 0;background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.25);border-radius:8px}
+.branch-label{font-size:.68rem;font-weight:700;color:#93C5FD;text-transform:uppercase;letter-spacing:.5px;flex:1}
+.branch-btns{display:flex;gap:4px}
+.branch-btn{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);background:transparent;transition:all .2s}
+.branch-btn.active{background:#2563EB;color:#fff;border-color:#2563EB}
+.branch-btn:hover:not(.active){background:rgba(255,255,255,.1);color:#fff}
+
+/* ── CUSTOMER MODULE ── */
+.cust-card{background:var(--surf);border-radius:var(--r);border:1px solid var(--bord);box-shadow:var(--sh);padding:16px;transition:transform .2s,box-shadow .2s}
 .cust-card:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
-.cust-av{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:800;color:#fff;flex-shrink:0;margin-bottom:10px}
-.cust-name{font-size:.94rem;font-weight:800;color:var(--navy);margin-bottom:2px}
-.cust-id{font-size:.7rem;color:var(--t4);font-family:'JetBrains Mono',monospace;margin-bottom:4px}
-.cust-detail{font-size:.78rem;color:var(--t3);margin-bottom:2px}
+.cust-av{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:#fff;flex-shrink:0}
+.cust-name{font-size:.92rem;font-weight:700;color:var(--navy)}
+.cust-meta{font-size:.76rem;color:var(--t3);margin-top:2px}
+.cust-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 
 /* ── DISCOUNT ROW ── */
-.disc-row{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(37,99,235,.05);border-top:1px solid var(--bord)}
-.disc-label{font-size:.78rem;font-weight:700;color:var(--t2);white-space:nowrap}
-.disc-input{width:70px;padding:5px 8px;border:1.5px solid var(--bord);border-radius:6px;font-size:.83rem;background:var(--surf);color:var(--t1);outline:none}
-.disc-input:focus{border-color:#2563EB}
-.disc-type{padding:5px 8px;border:1.5px solid var(--bord);border-radius:6px;font-size:.83rem;background:var(--surf);color:var(--t1);outline:none}
+.disc-row{background:var(--bg);border-radius:10px;padding:12px 14px;margin-bottom:12px;border:1px solid var(--bord)}
+.disc-row-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin-bottom:9px}
+.disc-inputs{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
 
-/* ── HALF QTY ── */
-.half-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
-.half-btn{padding:5px 10px;border:1.5px solid var(--bord);border-radius:6px;font-size:.75rem;font-weight:700;color:var(--t2);background:var(--surf);cursor:pointer;transition:all .15s}
-.half-btn:hover{background:#2563EB;color:#fff;border-color:#2563EB}
+/* ── HALF PACK HELPER ── */
+.qty-helper{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.qty-chip{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:99px;border:1.5px solid var(--bord);color:var(--t3);cursor:pointer;background:var(--surf);transition:all .15s}
+.qty-chip:hover{border-color:#2563EB;color:#2563EB;background:rgba(37,99,235,.06)}
 </style>
 </head>
 <body>
 
 <!-- ══ LOADING ══ -->
 <div class="loading-screen" id="loading">
-  <div style="font-size:2rem">🏪</div>
+  <div style="font-size:2rem">📦</div>
   <div class="spin"></div>
   <p>Connecting to Fujup Venture…</p>
 </div>
@@ -389,33 +393,33 @@ tbody tr:hover{background:var(--bg)}
       <button class="nk" style="grid-column:span 2" onclick="sPk('0')">0</button>
       <button class="nk" onclick="sPdel()">⌫</button>
     </div>
-    <button class="btn-ghost" onclick="show('lock-screen')">👤 Staff / Branch Login</button>
+    <button class="btn-ghost" onclick="show('lock-screen')">👤 Staff / Buyer Login</button>
     <div class="lfoot"><span class="pdot"></span>Firebase Sync · Secured</div>
   </div>
 </div>
 
-<!-- ══ STAFF / BRANCH LOGIN ══ -->
+<!-- ══ STAFF / BUYER LOGIN ══ -->
 <div class="screen screen-bg h" id="lock-screen">
   <div class="lcard">
-    <div class="llogo"><div class="llogo-icon">🏪</div><div class="llogo-text">Fujup<span> Venture</span></div></div>
+    <div class="llogo"><div class="llogo-icon">🏢</div><div class="llogo-text">Fujup<span> Venture</span></div></div>
     <div class="ltabs">
       <div class="ltab on" id="t-login" onclick="switchTab('login')">Staff Login</div>
-      <div class="ltab" id="t-pin" onclick="switchTab('pin')">Branch PIN</div>
+      <div class="ltab" id="t-pin" onclick="switchTab('pin')">Admin PIN</div>
     </div>
     <!-- Email login -->
     <div id="f-login">
       <div class="ltitle">Welcome back</div>
       <div class="lsub">Sign in with your staff credentials</div>
       <div id="login-err" class="errbox h"></div>
-      <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="l-email" placeholder="staff@fujupventure.com"/></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="l-email" placeholder="staff@business.com"/></div>
       <div class="fg"><label class="fl">Password</label><div class="pw-w"><input class="fi" type="password" id="l-pass" placeholder="Password"/><span class="pw-eye" onclick="tpw('l-pass')">👁</span></div></div>
       <button class="btn-pri" id="login-btn" onclick="doLogin()">Sign In →</button>
-      <button class="btn-ghost" onclick="switchTab('pin')">🔑 Use Branch PIN</button>
+      <button class="btn-ghost" onclick="switchTab('pin')">🔑 Use Buyer Admin PIN</button>
     </div>
     <!-- PIN -->
     <div id="f-pin" class="h">
-      <div class="ltitle">Branch PIN</div>
-      <div class="lsub">Enter your branch's 4-digit PIN</div>
+      <div class="ltitle">Buyer Admin PIN</div>
+      <div class="lsub">Enter your buyer's 4-digit PIN</div>
       <div class="pin-dots"><div class="pd" id="d0"></div><div class="pd" id="d1"></div><div class="pd" id="d2"></div><div class="pd" id="d3"></div></div>
       <div id="pin-err" class="errbox h">❌ Wrong PIN. Try again.</div>
       <div class="numpad">
@@ -427,7 +431,7 @@ tbody tr:hover{background:var(--bg)}
       </div>
       <button class="btn-ghost" onclick="switchTab('login')">👤 Staff Login</button>
     </div>
-    <div class="lfoot"><span class="pdot"></span>Multi-branch sync · <strong onclick="show('sa-screen')">Super Admin</strong></div>
+    <div class="lfoot"><span class="pdot"></span>Multi-device sync · <strong onclick="show('sa-screen')">Super Admin</strong></div>
   </div>
 </div>
 
@@ -437,25 +441,34 @@ tbody tr:hover{background:var(--bg)}
 
 <aside class="sb" id="sidebar">
   <div class="sb-head">
-    <div class="sb-brand"><div class="sb-icon">🏪</div><div class="sb-name">Fujup<span> Venture</span></div></div>
+    <div class="sb-brand"><div class="sb-icon">🏢</div><div class="sb-name">Fujup<span> Venture</span></div></div>
     <button class="sb-x" onclick="closeSB()">✕</button>
   </div>
   <div class="sb-sa-bar h" id="sa-bar">🛡️ SUPER ADMIN</div>
   <div class="sb-ctx h" id="ctx-bar">
-    <span class="sb-ctx-name" id="ctx-name">Branch</span>
+    <span class="sb-ctx-name" id="ctx-name">Buyer</span>
     <span class="sb-ctx-back" onclick="exitCtx()">← Exit</span>
+  </div>
+  <!-- Branch Switcher -->
+  <div class="branch-bar h" id="branch-bar">
+    <span class="branch-label" id="branch-label">🏢 Branch</span>
+    <div class="branch-btns">
+      <button class="branch-btn active" id="br-btn-0" onclick="switchBranch(0)">B1</button>
+      <button class="branch-btn" id="br-btn-1" onclick="switchBranch(1)">B2</button>
+    </div>
   </div>
   <nav class="sb-nav">
     <div class="sb-sec">Main</div>
     <a class="sb-lk on" data-pg="dashboard" onclick="nav('dashboard')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
     <a class="sb-lk" data-pg="products" onclick="nav('products')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Products</a>
     <a class="sb-lk" data-pg="sales" onclick="nav('sales')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Sales<span class="sb-badge" id="sb-sales"></span></a>
-    <a class="sb-lk" data-pg="customers" id="nav-customers" onclick="nav('customers')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Customers</a>
+    <a class="sb-lk" data-pg="customers" onclick="nav('customers')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Customers</a>
     <div class="sb-sec">Analytics</div>
     <a class="sb-lk" data-pg="reports" id="nav-reports" onclick="nav('reports')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reports</a>
     <a class="sb-lk" data-pg="alerts" onclick="nav('alerts')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Alerts<span class="sb-badge" id="sb-notif"></span></a>
     <div class="sb-sec" id="admin-section">Admin</div>
     <a class="sb-lk" data-pg="staff" id="nav-staff" onclick="nav('staff')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Staff</a>
+    <!-- SA only: Buyers nav -->
     <a class="sb-lk" data-pg="buyers" id="nav-buyers" onclick="nav('buyers')" style="display:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Branches</a>
     <a class="sb-lk" data-pg="settings" id="nav-settings" onclick="nav('settings')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
   </nav>
@@ -474,8 +487,6 @@ tbody tr:hover{background:var(--bg)}
     <button class="tb-menu" onclick="openSB()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <div class="tb-title" id="tb-title">Dashboard</div>
     <div class="tb-right">
-      <!-- Branch selector (visible when in SA mode with branch) -->
-      <select class="branch-sel h" id="branch-sel" onchange="switchBranch(this.value)"></select>
       <div class="tb-icon" onclick="nav('alerts')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="tb-ndot h" id="tb-ndot"></span></div>
       <div class="tb-av" id="tb-av" onclick="nav('settings')">A</div>
     </div>
@@ -495,7 +506,7 @@ tbody tr:hover{background:var(--bg)}
       <div class="sg">
         <div class="sc"><div class="sc-icon" style="background:#EFF6FF">📦</div><div><div class="label">Products</div><div class="value" id="st-p">0</div><div class="sub" id="st-p-s"></div></div></div>
         <div class="sc"><div class="sc-icon" style="background:#F0FDF4">💳</div><div><div class="label">Today Sales</div><div class="value" id="st-s">0</div><div class="sub" id="st-s-s" style="color:#10B981"></div></div></div>
-        <div class="sc"><div class="sc-icon" style="background:#FFFBEB">💰</div><div><div class="label">Today Revenue</div><div class="value" id="st-r">₦0</div><div class="sub" id="st-r-s"></div></div></div>
+        <div class="sc"><div class="sc-icon" style="background:#FFFBEB">💰</div><div><div class="label">Today Revenue</div><div class="value" id="st-r">$0</div><div class="sub" id="st-r-s"></div></div></div>
         <div class="sc" style="border-left:3px solid #EF4444"><div class="sc-icon" style="background:#FEF2F2">⚠️</div><div><div class="label">Low / Out Stock</div><div class="value" id="st-l">0</div><div class="sub" style="color:#EF4444">Need restock</div></div></div>
       </div>
       <div id="dash-grid" style="display:grid;grid-template-columns:1fr 340px;gap:14px">
@@ -535,19 +546,7 @@ tbody tr:hover{background:var(--bg)}
         <div class="srch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="ss" placeholder="Search…" oninput="renderSales()"/></div>
         <input type="date" class="fsel" id="sd" onchange="renderSales()"/>
       </div>
-      <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Product</th><th>Qty</th><th>Price</th><th>Discount</th><th>Total</th><th>Cashier</th><th>Date</th><th>Receipt</th></tr></thead><tbody id="sales-tb"></tbody></table></div></div>
-    </div>
-
-    <!-- CUSTOMERS -->
-    <div class="pg" id="pg-customers">
-      <div class="pg-head">
-        <div><h2>Customers</h2><div class="pg-sub" id="cust-sub">Manage customer records</div></div>
-        <button class="btn btn-b btn-sm" id="btn-add-cust" onclick="openCustModal()">+ Add Customer</button>
-      </div>
-      <div class="fb">
-        <div class="srch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="custs" placeholder="Search customers…" oninput="renderCustomers()"/></div>
-      </div>
-      <div class="sc-grid" id="cust-grid"></div>
+      <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Product</th><th>Qty</th><th>Price</th><th>Total</th><th>Cashier</th><th>Date</th><th>Receipt</th></tr></thead><tbody id="sales-tb"></tbody></table></div></div>
     </div>
 
     <!-- REPORTS -->
@@ -561,8 +560,8 @@ tbody tr:hover{background:var(--bg)}
       </div>
       <div class="sg" style="grid-template-columns:repeat(4,1fr)">
         <div class="sc"><div><div class="label">Sales</div><div class="value" id="rpt-s">0</div></div></div>
-        <div class="sc"><div><div class="label">Revenue</div><div class="value" id="rpt-r">₦0</div></div></div>
-        <div class="sc"><div><div class="label">Avg Order</div><div class="value" id="rpt-a">₦0</div></div></div>
+        <div class="sc"><div><div class="label">Revenue</div><div class="value" id="rpt-r">$0</div></div></div>
+        <div class="sc"><div><div class="label">Avg Order</div><div class="value" id="rpt-a">$0</div></div></div>
         <div class="sc"><div><div class="label">Units Sold</div><div class="value" id="rpt-u">0</div></div></div>
       </div>
       <div id="rpt-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px">
@@ -578,6 +577,20 @@ tbody tr:hover{background:var(--bg)}
       <div id="notif-list"></div>
     </div>
 
+    <!-- CUSTOMERS -->
+    <div class="pg" id="pg-customers">
+      <div class="pg-head">
+        <div><h2>Customers</h2><div class="pg-sub" id="cust-sub">Manage your customer records</div></div>
+        <div class="pg-acts">
+          <button class="btn btn-b btn-sm" id="btn-add-cust" onclick="openCustModal()">+ Add Customer</button>
+        </div>
+      </div>
+      <div class="fb">
+        <div class="srch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="cs" placeholder="Search customers…" oninput="renderCustomers()"/></div>
+      </div>
+      <div class="cust-grid" id="cust-grid"></div>
+    </div>
+
     <!-- STAFF -->
     <div class="pg" id="pg-staff">
       <div class="pg-head"><div><h2>Staff</h2><div class="pg-sub">Manage team access</div></div><button class="btn btn-b btn-sm" id="btn-add-staff" onclick="openStaffModal()">+ Add Staff</button></div>
@@ -588,10 +601,10 @@ tbody tr:hover{background:var(--bg)}
     <div class="pg" id="pg-buyers">
       <div class="pg-head"><div><h2>Branches</h2><div class="pg-sub" id="buyers-sub"></div></div><button class="btn btn-b btn-sm" onclick="openBuyerModal()">+ Add Branch</button></div>
       <div id="buyers-overview" class="sg" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px">
-        <div class="sc"><div class="sc-icon" style="background:#EDE9FE">🏢</div><div><div class="label">Total Branches</div><div class="value" id="sa-b">0</div></div></div>
+        <div class="sc"><div class="sc-icon" style="background:#EDE9FE">🏢</div><div><div class="label">Total Buyers</div><div class="value" id="sa-b">0</div></div></div>
         <div class="sc"><div class="sc-icon" style="background:#EFF6FF">📦</div><div><div class="label">All Products</div><div class="value" id="sa-p">0</div></div></div>
         <div class="sc"><div class="sc-icon" style="background:#F0FDF4">💳</div><div><div class="label">All Sales</div><div class="value" id="sa-s">0</div></div></div>
-        <div class="sc"><div class="sc-icon" style="background:#FFFBEB">💰</div><div><div class="label">All Revenue</div><div class="value" id="sa-r">₦0</div></div></div>
+        <div class="sc"><div class="sc-icon" style="background:#FFFBEB">💰</div><div><div class="label">All Revenue</div><div class="value" id="sa-r">$0</div></div></div>
       </div>
       <div id="buyers-grid" class="sg-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
     </div>
@@ -601,8 +614,8 @@ tbody tr:hover{background:var(--bg)}
       <div class="pg-head"><div><h2>Settings</h2></div></div>
       <div class="set-grid">
         <div class="card"><div class="card-head"><h3>🏢 Business</h3></div><div class="card-body">
-          <div class="fg2"><label class="fl">Branch Name</label><input class="fc" id="set-biz" placeholder="Fujup Venture — Main"/></div>
-          <div class="fg2"><label class="fl">Currency</label><input class="fc" id="set-cur" placeholder="₦" maxlength="3" style="width:70px"/></div>
+          <div class="fg2"><label class="fl">Business Name</label><input class="fc" id="set-biz" placeholder="My Store"/></div>
+          <div class="fg2"><label class="fl">Currency</label><input class="fc" id="set-cur" placeholder="$" maxlength="3" style="width:70px"/></div>
           <div class="fg2"><label class="fl">Low Stock Threshold</label><input class="fc" type="number" id="set-thr" placeholder="10" style="width:110px"/></div>
           <div class="fg2"><label class="fl">Store Address</label><input class="fc" id="set-addr" placeholder="Address for receipts"/></div>
           <button class="btn btn-b btn-sm" onclick="saveSettings()">Save</button>
@@ -647,25 +660,12 @@ tbody tr:hover{background:var(--bg)}
     <div id="pm-err" class="ferr h"></div>
     <input type="hidden" id="pm-id"/>
     <div class="fr">
-      <div class="fu fg2"><label class="fl">Product Name *</label><input class="fc" id="pm-name" placeholder="e.g. Soft Drink Crate"/></div>
+      <div class="fu fg2"><label class="fl">Product Name *</label><input class="fc" id="pm-name" placeholder="e.g. Paracetamol 500mg"/></div>
       <div class="fg2"><label class="fl">Category *</label><input class="fc" id="pm-cat" list="cat-dl"/><datalist id="cat-dl"></datalist></div>
-      <div class="fg2"><label class="fl">SKU / Code</label><input class="fc" id="pm-sku" placeholder="PRD-001"/></div>
+      <div class="fg2"><label class="fl">SKU / Code</label><input class="fc" id="pm-sku" placeholder="MED-001"/></div>
       <div class="fg2"><label class="fl">Selling Price *</label><input class="fc" type="number" id="pm-price" placeholder="0.00" min="0" step="0.01"/></div>
       <div class="fg2"><label class="fl">Cost Price</label><input class="fc" type="number" id="pm-cost" placeholder="0.00" min="0" step="0.01"/></div>
-      <div class="fg2"><label class="fl">Quantity *</label><input class="fc" type="number" id="pm-qty" placeholder="0" min="0" step="0.5"/></div>
-      <div class="fg2"><label class="fl">Unit Type</label>
-        <select class="fc" id="pm-unit">
-          <option value="unit">Unit</option>
-          <option value="pack">Pack</option>
-          <option value="crate">Crate</option>
-          <option value="carton">Carton</option>
-          <option value="bag">Bag</option>
-          <option value="dozen">Dozen</option>
-          <option value="kg">Kg</option>
-          <option value="litre">Litre</option>
-        </select>
-      </div>
-      <div class="fg2"><label class="fl">Units Per Pack/Crate</label><input class="fc" type="number" id="pm-ups" placeholder="e.g. 24" min="1" step="1" title="How many single units are in one pack/crate? Used for half-pack calculations."/></div>
+      <div class="fg2"><label class="fl">Quantity *</label><input class="fc" type="number" id="pm-qty" placeholder="0" min="0"/></div>
       <div class="fg2"><label class="fl">Low Stock Alert At</label><input class="fc" type="number" id="pm-low" placeholder="10"/></div>
       <div class="fu fg2"><label class="fl">Supplier</label><input class="fc" id="pm-sup" placeholder="Supplier name"/></div>
     </div>
@@ -675,20 +675,21 @@ tbody tr:hover{background:var(--bg)}
 
 <!-- Sale (Cart System) -->
 <div id="sale-modal" class="mo h"><div class="mb" style="max-width:600px">
-  <div class="mh"><h3>🛒 New Sale — Fujup Venture</h3><button class="mx" onclick="closeM('sale-modal')">✕</button></div>
+  <div class="mh"><h3>🛒 New Sale</h3><button class="mx" onclick="closeM('sale-modal')">✕</button></div>
   <div class="mbd">
     <div id="sm-err" class="ferr h"></div>
 
-    <!-- Customer -->
-    <div class="fg2" style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end">
-      <div>
-        <label class="fl">Customer</label>
-        <input class="fc" id="sm-cust" placeholder="Walk-in customer" list="cust-dl-sale"/>
-        <datalist id="cust-dl-sale"></datalist>
+    <!-- Customer lookup -->
+    <div class="fg2">
+      <label class="fl">Customer</label>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:7px;align-items:start">
+        <div>
+          <input class="fc" id="sm-cust" placeholder="Walk-in customer or type name" oninput="custAutocomplete()"/>
+          <div id="cust-suggestions" style="display:none;position:absolute;z-index:600;background:var(--surf);border:1.5px solid var(--bord);border-radius:var(--r2);box-shadow:var(--sh2);max-height:160px;overflow-y:auto;min-width:220px"></div>
+        </div>
+        <button class="btn btn-o btn-sm" onclick="openCustModal()" style="white-space:nowrap;height:40px">+ New</button>
       </div>
-      <button class="btn btn-o btn-sm" onclick="linkSaleCustomer()" title="Link to customer record" style="height:40px">👤 Link</button>
     </div>
-    <input type="hidden" id="sm-cust-id"/>
 
     <!-- Add product to cart -->
     <div style="background:var(--bg);border-radius:10px;padding:14px;margin-bottom:14px">
@@ -700,31 +701,20 @@ tbody tr:hover{background:var(--bg)}
             <option value="">— Select product —</option>
           </select>
         </div>
-        <div style="min-width:88px">
+        <div style="min-width:100px">
           <label class="fl">Qty</label>
           <input class="fc" type="number" id="sm-qty" placeholder="1" min="0.5" step="0.5" style="font-size:.9rem"/>
+          <!-- Quick qty chips -->
+          <div class="qty-helper" id="qty-chips">
+            <span class="qty-chip" onclick="setQtyChip(0.5)">½</span>
+            <span class="qty-chip" onclick="setQtyChip(1)">1</span>
+            <span class="qty-chip" onclick="setQtyChip(2)">2</span>
+            <span class="qty-chip" onclick="setQtyChip(5)">5</span>
+          </div>
         </div>
-        <button class="btn btn-b btn-sm" onclick="addToCart()" style="height:40px;margin-bottom:1px;white-space:nowrap">+ Add</button>
+        <button class="btn btn-b btn-sm" onclick="addToCart()" style="height:40px;margin-bottom:22px;white-space:nowrap">+ Add</button>
       </div>
-      <!-- Half / partial quick buttons -->
-      <div class="half-row" id="half-row" style="display:none">
-        <span style="font-size:.72rem;color:var(--t3);align-self:center">Quick:</span>
-        <button class="half-btn" onclick="setHalfQty(0.5)">½ Unit</button>
-        <button class="half-btn" id="half-pack-btn" onclick="setHalfQty('half-pack')" style="display:none">½ Pack</button>
-        <button class="half-btn" id="qtr-pack-btn" onclick="setHalfQty('qtr-pack')" style="display:none">¼ Pack</button>
-        <button class="half-btn" id="item-disc-btn" onclick="toggleItemDiscount()">💸 Item Discount</button>
-      </div>
-      <!-- Per-item discount (hidden by default) -->
-      <div id="item-disc-row" class="disc-row h" style="margin-top:8px;border-radius:8px;border:1px solid var(--bord)">
-        <span class="disc-label">Item Discount:</span>
-        <input class="disc-input" type="number" id="sm-item-disc" placeholder="0" min="0" step="0.01" oninput="updateItemDiscPreview()"/>
-        <select class="disc-type" id="sm-item-disc-type" onchange="updateItemDiscPreview()">
-          <option value="pct">%</option>
-          <option value="flat">₦ Flat</option>
-        </select>
-        <span id="item-disc-preview" style="font-size:.78rem;color:#059669;font-weight:700;margin-left:4px"></span>
-      </div>
-      <div id="sm-info" class="ibox h" style="margin-top:8px;margin-bottom:0"></div>
+      <div id="sm-info" class="ibox h" style="margin-top:4px;margin-bottom:0"></div>
     </div>
 
     <!-- Cart items -->
@@ -732,20 +722,31 @@ tbody tr:hover{background:var(--bg)}
       <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin-bottom:8px">🛒 Cart Items</div>
       <div id="cart-items" style="border:1px solid var(--bord);border-radius:10px;overflow:hidden;margin-bottom:12px"></div>
 
-      <!-- Bill discount -->
-      <div style="padding:10px 14px;background:var(--bg);border-radius:10px;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span style="font-size:.78rem;font-weight:700;color:var(--t2)">🏷️ Bill Discount:</span>
-        <input class="disc-input" type="number" id="sm-bill-disc" placeholder="0" min="0" step="0.01" oninput="renderCart()"/>
-        <select class="disc-type" id="sm-bill-disc-type" onchange="renderCart()">
-          <option value="pct">%</option>
-          <option value="flat">₦ Flat</option>
-        </select>
-        <span id="bill-disc-preview" style="font-size:.78rem;color:#059669;font-weight:700"></span>
+      <!-- Discount section -->
+      <div class="disc-row">
+        <div class="disc-row-title">🏷️ Discounts</div>
+        <div class="disc-inputs">
+          <div>
+            <label class="fl">Item Discount (%)</label>
+            <input class="fc" type="number" id="disc-item" placeholder="0" min="0" max="100" step="0.5" oninput="recalcCart()"/>
+          </div>
+          <div>
+            <label class="fl">Bill Discount (%)</label>
+            <input class="fc" type="number" id="disc-bill" placeholder="0" min="0" max="100" step="0.5" oninput="recalcCart()"/>
+          </div>
+          <div style="text-align:right;padding-bottom:2px">
+            <div style="font-size:.7rem;color:var(--t3);margin-bottom:2px">Savings</div>
+            <div style="font-size:.88rem;font-weight:700;color:#EF4444;font-family:'JetBrains Mono',monospace" id="disc-savings">$0.00</div>
+          </div>
+        </div>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(135deg,#0F1F45,#1E3A8A);border-radius:10px;color:#fff">
-        <div style="font-size:.9rem;font-weight:700">Grand Total</div>
-        <div style="font-size:1.3rem;font-weight:800;font-family:'JetBrains Mono',monospace" id="cart-total">₦0.00</div>
+        <div>
+          <div style="font-size:.9rem;font-weight:700">Grand Total</div>
+          <div style="font-size:.72rem;opacity:.6" id="cart-subtotal-label"></div>
+        </div>
+        <div style="font-size:1.3rem;font-weight:800;font-family:'JetBrains Mono',monospace" id="cart-total">$0.00</div>
       </div>
     </div>
 
@@ -777,7 +778,7 @@ tbody tr:hover{background:var(--bg)}
   <div class="mbd">
     <div id="sa-info" style="font-weight:700;font-size:.9rem;color:var(--navy);margin-bottom:12px"></div>
     <div class="fg2"><label class="fl">Type</label><select class="fc" id="sa-type"><option value="add">➕ Add (Restock)</option><option value="remove">➖ Remove (Damage/Expiry)</option><option value="set">📌 Set Exact Quantity</option></select></div>
-    <div class="fg2"><label class="fl">Quantity</label><input class="fc" type="number" id="sa-qty" min="0" step="0.5"/></div>
+    <div class="fg2"><label class="fl">Quantity</label><input class="fc" type="number" id="sa-qty" min="0"/></div>
     <div class="fg2"><label class="fl">Reason</label><input class="fc" id="sa-reason" placeholder="e.g. Received from supplier"/></div>
     <input type="hidden" id="sa-pid"/>
   </div>
@@ -791,7 +792,7 @@ tbody tr:hover{background:var(--bg)}
     <div id="stm-err" class="ferr h"></div>
     <input type="hidden" id="stm-id"/>
     <div class="fg2"><label class="fl">Full Name *</label><input class="fc" id="stm-name" placeholder="Jane Smith"/></div>
-    <div class="fg2"><label class="fl">Email *</label><input class="fc" type="email" id="stm-email" placeholder="jane@fujupventure.com"/></div>
+    <div class="fg2"><label class="fl">Email *</label><input class="fc" type="email" id="stm-email" placeholder="jane@business.com"/></div>
     <div class="fg2"><label class="fl">Role</label>
       <select class="fc" id="stm-role">
         <option value="admin">👑 Admin (Full Control)</option>
@@ -806,32 +807,32 @@ tbody tr:hover{background:var(--bg)}
   <div class="mf"><button class="btn btn-o" onclick="closeM('staff-modal')">Cancel</button><button class="btn btn-b" onclick="saveStaff()">Save</button></div>
 </div></div>
 
-<!-- Branch (SA) -->
+<!-- Buyer (SA) -->
 <div id="buyer-modal" class="mo h"><div class="mb">
-  <div class="mh"><h3 id="bm-t">Create Branch</h3><button class="mx" onclick="closeM('buyer-modal')">✕</button></div>
+  <div class="mh"><h3 id="bm-t">Create Buyer</h3><button class="mx" onclick="closeM('buyer-modal')">✕</button></div>
   <div class="mbd">
     <div id="bm-err" class="ferr h"></div>
     <input type="hidden" id="bm-id"/>
     <div class="fr">
-      <div class="fu fg2"><label class="fl">Branch Name *</label><input class="fc" id="bm-name" placeholder="Fujup Venture — Main Branch"/></div>
-      <div class="fg2"><label class="fl">Admin Email *</label><input class="fc" type="email" id="bm-email" placeholder="admin@fujupventure.com"/></div>
+      <div class="fu fg2"><label class="fl">Business Name *</label><input class="fc" id="bm-name" placeholder="City Pharmacy"/></div>
+      <div class="fg2"><label class="fl">Admin Email *</label><input class="fc" type="email" id="bm-email" placeholder="admin@business.com"/></div>
       <div class="fg2"><label class="fl">Admin Password *</label><input class="fc" type="password" id="bm-pass" placeholder="Min 6 chars"/></div>
-      <div class="fg2"><label class="fl">Branch PIN (4 digits) *</label><input class="fc" type="text" inputmode="numeric" id="bm-pin" maxlength="4" placeholder="e.g. 1234" autocomplete="off"/></div>
-      <div class="fg2"><label class="fl">Currency</label><input class="fc" id="bm-cur" value="₦" maxlength="3"/></div>
+      <div class="fg2"><label class="fl">Buyer PIN (4 digits)</label><input class="fc" type="password" id="bm-pin" maxlength="4" placeholder="e.g. 1234"/></div>
+      <div class="fg2"><label class="fl">Currency</label><input class="fc" id="bm-cur" value="$" maxlength="3"/></div>
       <div class="fg2"><label class="fl">Type</label>
         <select class="fc" id="bm-type">
-          <option value="shop">🏪 Shop</option>
-          <option value="supermarket">🛒 Supermarket</option>
           <option value="pharmacy">💊 Pharmacy</option>
+          <option value="supermarket">🛒 Supermarket</option>
+          <option value="shop">🏪 Shop</option>
           <option value="restaurant">🍽️ Restaurant</option>
           <option value="electronics">⚡ Electronics</option>
           <option value="other">📦 Other</option>
         </select>
       </div>
-      <div class="fu fg2"><label class="fl">Address</label><input class="fc" id="bm-addr" placeholder="Branch Address"/></div>
+      <div class="fu fg2"><label class="fl">Address</label><input class="fc" id="bm-addr" placeholder="Address"/></div>
     </div>
   </div>
-  <div class="mf"><button class="btn btn-o" onclick="closeM('buyer-modal')">Cancel</button><button class="btn btn-b" onclick="saveBuyer()">Save Branch</button></div>
+  <div class="mf"><button class="btn btn-o" onclick="closeM('buyer-modal')">Cancel</button><button class="btn btn-b" onclick="saveBuyer()">Save Buyer</button></div>
 </div></div>
 
 <!-- Customer Modal -->
@@ -841,20 +842,24 @@ tbody tr:hover{background:var(--bg)}
     <div id="cm-err" class="ferr h"></div>
     <input type="hidden" id="cm-id"/>
     <div class="fr">
-      <div class="fu fg2"><label class="fl">Full Name *</label><input class="fc" id="cm-name" placeholder="Customer full name"/></div>
+      <div class="fg2"><label class="fl">Full Name *</label><input class="fc" id="cm-name" placeholder="e.g. Amina Bello"/></div>
       <div class="fg2"><label class="fl">Phone / WhatsApp *</label><input class="fc" id="cm-phone" placeholder="+234 800 000 0000"/></div>
       <div class="fg2"><label class="fl">Email (optional)</label><input class="fc" type="email" id="cm-email" placeholder="customer@email.com"/></div>
-      <div class="fu fg2"><label class="fl">Address (optional)</label><input class="fc" id="cm-addr" placeholder="Customer address"/></div>
+      <div class="fu fg2"><label class="fl">Address (optional)</label><input class="fc" id="cm-addr" placeholder="Street, City"/></div>
       <div class="fu fg2"><label class="fl">Notes</label><textarea class="fc" id="cm-notes" rows="2" placeholder="Any notes about this customer…" style="resize:vertical"></textarea></div>
     </div>
   </div>
-  <div class="mf"><button class="btn btn-o" onclick="closeM('cust-modal')">Cancel</button><button class="btn btn-b" onclick="saveCustomer()">Save Customer</button></div>
+  <div class="mf"><button class="btn btn-o" onclick="closeM('cust-modal')">Cancel</button><button class="btn btn-b" onclick="saveCust()">Save Customer</button></div>
 </div></div>
 
 <!-- Customer History Modal -->
 <div id="cust-hist-modal" class="mo h"><div class="mb mb-lg">
-  <div class="mh"><h3 id="ch-t">Purchase History</h3><button class="mx" onclick="closeM('cust-hist-modal')">✕</button></div>
-  <div class="mbd" id="ch-body"></div>
+  <div class="mh"><h3 id="ch-title">Customer History</h3><button class="mx" onclick="closeM('cust-hist-modal')">✕</button></div>
+  <div class="mbd">
+    <div id="ch-info" style="display:flex;gap:14px;align-items:flex-start;padding:12px;background:var(--bg);border-radius:10px;margin-bottom:16px"></div>
+    <div style="font-size:.8rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Purchase History</div>
+    <div id="ch-history"></div>
+  </div>
   <div class="mf"><button class="btn btn-o" onclick="closeM('cust-hist-modal')">Close</button></div>
 </div></div>
 
@@ -875,8 +880,7 @@ tbody tr:hover{background:var(--bg)}
 <script>
 'use strict';
 // ══════════════════════════════════════════════════════
-//  FUJUP VENTURE — Inventory Management System
-//  Multi-Branch · Customer Records · Discounts · Half Pack
+//  FUJUP VENTURE — Firebase Inventory System
 // ══════════════════════════════════════════════════════
 
 // ── FIREBASE CONFIG ────────────────────────────────
@@ -892,25 +896,31 @@ firebase.initializeApp(FB);
 const db  = firebase.firestore();
 const auth= firebase.auth();
 
-// ── SUPER ADMIN PIN ────────────────────────────────
+// ── SUPER ADMIN PIN (stored in Firestore) ──────────
 const SA_PIN_DEFAULT = '1990';
 let SA_PIN = SA_PIN_DEFAULT;
 
 // ── APP STATE ──────────────────────────────────────
-let ME        = null;
-let BID       = null;
-let SA_MODE   = false;
-let PRODS     = [];
-let SALES     = [];
-let NOTIFS    = [];
-let STAFF     = [];
-let BUYERS    = [];
-let CUSTOMERS = [];
-let CFG       = { bizName:'Fujup Venture', currency:'₦', threshold:10, address:'' };
-let UNSUBS    = [];
-let DEL_TGT   = null;
-let RPT_MODE  = 'daily';
-let DARK      = localStorage.getItem('sp_dark')==='1';
+let ME       = null;   // current user object
+let BID      = null;   // current buyer ID (null = SA mode)
+let SA_MODE  = false;
+let PRODS    = [];
+let SALES    = [];
+let NOTIFS   = [];
+let STAFF    = [];
+let BUYERS   = [];
+let CUSTOMERS= [];
+let CFG      = { bizName:'My Store', currency:'$', threshold:10, address:'' };
+let UNSUBS   = [];
+let DEL_TGT  = null;
+let RPT_MODE = 'daily';
+let DARK     = localStorage.getItem('sp_dark')==='1';
+
+// ── BRANCH STATE ───────────────────────────────────
+// Fujup Venture has 2 fixed branches (stored as buyers in Firestore)
+// BRANCH_IDS will be loaded from Firestore on SA login
+let BRANCH_IDS   = [];      // ['branchId1', 'branchId2', ...]
+let ACTIVE_BRANCH= 0;       // index into BRANCH_IDS
 
 const COLORS = ['#2563EB','#7C3AED','#059669','#DC2626','#D97706','#0891B2','#EC4899'];
 const ICONS  = {pharmacy:'💊',supermarket:'🛒',shop:'🏪',restaurant:'🍽️',electronics:'⚡',other:'📦'};
@@ -918,21 +928,21 @@ const EMOJI  = {Medicine:'💊',Supplements:'💪',Hygiene:'🧴',Dairy:'🥛',B
 
 // ── PERMISSIONS ────────────────────────────────────
 const PERMS = {
-  admin:      {prod:true, del:true, sale:true, rpt:true, staff:true, cfg:true, cust:true},
-  manager:    {prod:true, del:true, sale:true, rpt:true, staff:false,cfg:false,cust:true},
-  cashier:    {prod:false,del:false,sale:true, rpt:false,staff:false,cfg:false,cust:true},
-  staff:      {prod:false,del:false,sale:true, rpt:false,staff:false,cfg:false,cust:true},
-  accountant: {prod:false,del:false,sale:false,rpt:true, staff:false,cfg:false,cust:false},
+  admin:      {prod:true, del:true, sale:true, rpt:true, staff:true, cfg:true},
+  manager:    {prod:true, del:true, sale:true, rpt:true, staff:false,cfg:false},
+  cashier:    {prod:false,del:false,sale:true, rpt:false,staff:false,cfg:false},
+  staff:      {prod:false,del:false,sale:true, rpt:false,staff:false,cfg:false},
+  accountant: {prod:false,del:false,sale:false,rpt:true, staff:false,cfg:false},
 };
 function can(p){ if(SA_MODE) return true; return !!(PERMS[ME?.role||'cashier']?.[p]); }
 
 // ── HELPERS ────────────────────────────────────────
 const g    = id => document.getElementById(id);
 const esc  = s  => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const fmt  = v  => (CFG.currency||'₦')+parseFloat(v||0).toFixed(2);
+const fmt  = v  => (CFG.currency||'$')+parseFloat(v||0).toFixed(2);
 const fmtDT= d  => { try{ return new Date(d).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }catch{return'—';} };
 const fmtD = d  => { try{ const dt=new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`; }catch{return'';} };
-const tAgo = d  => { const m=Math.floor((Date.now()-new Date(d))/60000); if(m<1)return'just now'; if(m<60)return m+'m ago'; const h=Math.floor(m/60); if(h<24)return h+'h ago'; return Math.floor(h/24)+'d ago'; };
+const tAgo = d  => { const m=Math.floor((Date.now()-new Date(d))/ 60000); if(m<1)return'just now'; if(m<60)return m+'m ago'; const h=Math.floor(m/60); if(h<24)return h+'h ago'; return Math.floor(h/24)+'d ago'; };
 function show(id){ ['sa-screen','lock-screen','app'].forEach(s=>{ const e=g(s); if(e){e.classList.add('h');e.style.display='none';} }); const t=g(id); if(t){t.classList.remove('h');t.style.display='';} }
 function toast(msg,t='i'){ const el=document.createElement('div'); el.className='toast '+t; el.textContent={'s':'✅ ','e':'❌ ','i':'ℹ️ ','w':'⚠️ '}[t]+msg; g('toast-w').appendChild(el); setTimeout(()=>{el.classList.add('tout');setTimeout(()=>el.remove(),300);},3200); }
 function ferr(id,msg){ const e=g(id); if(e){e.textContent=msg;e.classList.remove('h');} }
@@ -945,12 +955,8 @@ function applyDark(){ document.documentElement.toggleAttribute('data-dark',DARK)
 function toggleDark(){ DARK=!DARK; localStorage.setItem('sp_dark',DARK?'1':'0'); applyDark(); }
 applyDark();
 
-// ── INIT ──────────────────────────────────────────
+// ── INIT: LOAD SA PIN FROM FIRESTORE ──────────────
 async function initApp(){
-  try {
-    // Sign in anonymously so Firestore security rules allow reads/writes
-    await auth.signInAnonymously();
-  } catch(e){ console.warn('Anonymous auth:', e.message); }
   try {
     const doc = await db.collection('system').doc('config').get();
     if(doc.exists && doc.data().sa_pin) SA_PIN = doc.data().sa_pin;
@@ -968,7 +974,9 @@ function sDots(){ for(let i=0;i<4;i++){const e=g('sd'+i);if(!e)return;e.classNam
 function sCheck(){
   if(sBuf===SA_PIN){
     SA_MODE=true; BID=null; ME={id:'superadmin',name:'Super Admin',role:'superadmin'};
-    show('app'); setupApp(); toast('Welcome, Super Admin 👑','s');
+    show('app');
+    setupApp();
+    toast('Welcome, Super Admin 👑','s');
   } else {
     for(let i=0;i<4;i++){const e=g('sd'+i);if(e){e.className='pd err';}}
     g('sa-pin-err').classList.remove('h');
@@ -976,27 +984,23 @@ function sCheck(){
   }
 }
 
-// ── BRANCH PIN ────────────────────────────────────
+// ── BUYER PIN ──────────────────────────────────────
 let pBuf='';
 function pk(d){ if(pBuf.length>=4)return; pBuf+=d; pDots(); if(pBuf.length===4) setTimeout(pCheck,160); }
 function pdel(){ pBuf=pBuf.slice(0,-1); pDots(); g('pin-err').classList.add('h'); }
 function pDots(){ for(let i=0;i<4;i++){const e=g('d'+i);if(!e)return;e.className='pd'+(i<pBuf.length?' on':'');} }
 async function pCheck(){
   try{
-    // Re-fetch SA_PIN from Firestore in case it was updated
-    try{
-      const cfgDoc = await db.collection('system').doc('config').get();
-      if(cfgDoc.exists && cfgDoc.data().sa_pin) SA_PIN = cfgDoc.data().sa_pin;
-    }catch(e){ console.warn('SA pin refresh:', e.message); }
-
     const snap = await db.collection('buyers').where('pin','==',pBuf).get();
     if(!snap.empty){
       const bdoc = snap.docs[0];
       const buyer = {id:bdoc.id,...bdoc.data()};
       BID = buyer.id;
-      ME  = {id:'buyer-admin-'+BID, name:buyer.adminName||buyer.name||'Admin', role:'admin', buyerId:BID};
-      CFG = {bizName:buyer.name, currency:buyer.currency||'₦', threshold:buyer.threshold||10, address:buyer.address||''};
-      show('app'); setupApp(); toast('Welcome to '+buyer.name+' 👋','s');
+      ME  = {id:'buyer-admin-'+BID, name:buyer.adminName||'Admin', role:'admin', buyerId:BID};
+      CFG = {bizName:buyer.name, currency:buyer.currency||'$', threshold:buyer.threshold||10, address:buyer.address||''};
+      show('app');
+      setupApp();
+      toast('Welcome to '+buyer.name+' 👋','s');
     } else {
       for(let i=0;i<4;i++){const e=g('d'+i);if(e){e.className='pd err';}}
       g('pin-err').classList.remove('h');
@@ -1012,35 +1016,57 @@ async function doLogin(){
   if(!email||!pass) return ferr('login-err','Fill in all fields.');
   g('login-btn').innerHTML='<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></div>';
   g('login-btn').disabled=true;
+
   try {
-    const snap = await db.collection('buyers').get();
-    let foundBuyer=null, foundStaff=null;
-    for(const bdoc of snap.docs){
-      const buyer={id:bdoc.id,...bdoc.data()};
-      if(buyer.adminEmail&&buyer.adminEmail.toLowerCase()===email&&buyer.adminPassword===pass){
-        foundBuyer=buyer; break;
-      }
-      const staffSnap=await db.collection('buyers').doc(bdoc.id).collection('staff').where('email','==',email).get();
-      if(!staffSnap.empty){
-        const sd=staffSnap.docs[0];
-        if(sd.data().password===pass){ foundBuyer=buyer; foundStaff={id:sd.id,...sd.data()}; break; }
+    // First: check if email matches a buyer admin directly (no index needed)
+    const buyerAdminSnap = await db.collection('buyers').where('adminEmail','==',email).get();
+    if(!buyerAdminSnap.empty){
+      const bdoc = buyerAdminSnap.docs[0];
+      const bd   = bdoc.data();
+      if(bd.adminPassword === pass){
+        BID = bdoc.id;
+        ME  = {id:'admin-'+BID, name:bd.adminName||'Admin', role:'admin', email:bd.adminEmail, buyerId:BID};
+        CFG = {bizName:bd.name, currency:bd.currency||'$', threshold:bd.threshold||10, address:bd.address||''};
+        show('app'); setupApp(); return;
+      } else {
+        throw new Error('Wrong password');
       }
     }
-    if(!foundBuyer){ g('login-btn').innerHTML='Sign In →'; g('login-btn').disabled=false; return ferr('login-err','Invalid email or password.'); }
-    BID=foundBuyer.id;
-    if(foundStaff){ ME={id:foundStaff.id,name:foundStaff.name,email:foundStaff.email,role:foundStaff.role,buyerId:BID}; }
-    else { ME={id:'admin-'+BID,name:foundBuyer.adminName||'Admin',email:foundBuyer.adminEmail,role:'admin',buyerId:BID}; }
-    CFG={bizName:foundBuyer.name,currency:foundBuyer.currency||'₦',threshold:foundBuyer.threshold||10,address:foundBuyer.address||''};
-    show('app'); setupApp(); toast('Welcome, '+ME.name+' 👋','s');
+
+    // Second: search staff within each buyer (avoids collectionGroup index requirement)
+    const buyersSnap = await db.collection('buyers').get();
+    let found = null, foundBID = null;
+    for(const bDoc of buyersSnap.docs){
+      const staffSnap = await bDoc.ref.collection('staff').where('email','==',email).get();
+      if(!staffSnap.empty){
+        const su = staffSnap.docs[0].data();
+        if(su.password === pass){
+          found    = {id:staffSnap.docs[0].id, ...su};
+          foundBID = bDoc.id;
+          // Also get buyer config
+          const bd = bDoc.data();
+          CFG = {bizName:bd.name, currency:bd.currency||'$', threshold:bd.threshold||10, address:bd.address||''};
+          break;
+        }
+      }
+    }
+
+    if(!found){ throw new Error('Invalid email or password'); }
+    BID = foundBID;
+    ME  = {id:found.id, name:found.name, role:found.role, email:found.email, buyerId:BID};
+    show('app'); setupApp();
+
   } catch(e){
-    g('login-btn').innerHTML='Sign In →'; g('login-btn').disabled=false;
-    ferr('login-err','Login error: '+e.message);
+    ferr('login-err', e.message||'Login failed. Check your credentials.');
+  } finally {
+    g('login-btn').innerHTML='Sign In →';
+    g('login-btn').disabled=false;
   }
 }
 
-// ── SETUP APP ─────────────────────────────────────
+// ── SETUP APP ──────────────────────────────────────
 function setupApp(){
-  const name = ME?.name||'User';
+  const name = ME.name||'User';
   g('sb-av').textContent  = name.charAt(0).toUpperCase();
   g('sb-uname').textContent= name;
   g('sb-urole').textContent= ME.role.charAt(0).toUpperCase()+ME.role.slice(1);
@@ -1048,40 +1074,28 @@ function setupApp(){
   const h=new Date().getHours();
   g('dash-greet').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+name.split(' ')[0]+' 👋';
   g('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  // SA bars
   const saBar=g('sa-bar'); const ctxBar=g('ctx-bar');
   if(SA_MODE && !BID){ saBar.classList.remove('h'); ctxBar.classList.add('h'); }
   else if(BID){ ctxBar.classList.remove('h'); saBar.classList.add('h'); g('ctx-name').textContent=CFG.bizName||'Branch'; }
   else { saBar.classList.add('h'); ctxBar.classList.add('h'); }
+  // Branch bar: show when inside a buyer context (staff login or SA-entered-buyer)
+  if(BID){ updateBranchBar(); }
+  else { g('branch-bar')?.classList.add('h'); }
+  // Role-based nav
   applyRoleNav();
-  if(g('set-biz'))  g('set-biz').value  = CFG.bizName||'Fujup Venture';
-  if(g('set-cur'))  g('set-cur').value  = CFG.currency||'₦';
+  // Settings defaults
+  if(g('set-biz'))  g('set-biz').value  = CFG.bizName||'';
+  if(g('set-cur'))  g('set-cur').value  = CFG.currency||'$';
   if(g('set-thr'))  g('set-thr').value  = CFG.threshold||10;
   if(g('set-addr')) g('set-addr').value = CFG.address||'';
   if(g('set-name')) g('set-name').value = name;
   if(g('set-role')) g('set-role').value = ME.role;
+  // SA settings card
   if(SA_MODE && !BID){ g('sa-pin-card')?.classList.remove('h'); g('pin-change-card')?.classList.add('h'); }
+  // Subscribe to Firestore
   subscribeData();
-  // Branch selector for SA
-  updateBranchSelector();
   if(SA_MODE && !BID){ nav('buyers'); } else { nav('dashboard'); }
-}
-
-function updateBranchSelector(){
-  const sel = g('branch-sel');
-  if(!sel) return;
-  if(SA_MODE && BUYERS.length > 0){
-    sel.classList.remove('h');
-    sel.innerHTML = '<option value="">— Switch Branch —</option>' +
-      BUYERS.map(b=>`<option value="${b.id}" ${b.id===BID?'selected':''}>${esc(b.name)}</option>`).join('');
-  } else {
-    sel.classList.add('h');
-  }
-}
-
-function switchBranch(bid){
-  if(!bid) return;
-  const buyer = BUYERS.find(b=>b.id===bid);
-  if(buyer) enterBuyer(buyer.id);
 }
 
 function applyRoleNav(){
@@ -1092,26 +1106,63 @@ function applyRoleNav(){
   sd('admin-section',  SA_MODE || can('staff'));
   sd('nav-buyers',     SA_MODE && !BID);
   sd('nav-settings',   true);
-  sd('nav-customers',  SA_MODE || can('cust'));
   sb('btn-add-prod',   SA_MODE || can('prod'));
   sb('btn-new-sale',   SA_MODE || can('sale'));
   sb('btn-rec-sale',   SA_MODE || can('sale'));
   sb('btn-add-staff',  SA_MODE || can('staff'));
-  sb('btn-add-cust',   SA_MODE || can('cust'));
+  sb('btn-add-cust',   SA_MODE || can('sale') || can('prod'));
+}
+
+// ── BRANCH SWITCHER ────────────────────────────────
+function updateBranchBar(){
+  const bar = g('branch-bar'); if(!bar) return;
+  // Only show branch bar if there are multiple branches and user is inside one
+  if(!BID || BUYERS.length < 2){ bar.classList.add('h'); return; }
+  bar.classList.remove('h');
+  const idx = BUYERS.findIndex(b=>b.id===BID);
+  ACTIVE_BRANCH = idx >= 0 ? idx : 0;
+  // Build branch buttons dynamically (supports future expansion)
+  const btnsDiv = bar.querySelector('.branch-btns');
+  if(btnsDiv){
+    btnsDiv.innerHTML = BUYERS.map((b,i)=>`<button class="branch-btn ${i===ACTIVE_BRANCH?'active':''}" onclick="switchBranch(${i})">B${i+1}</button>`).join('');
+  }
+  g('branch-label').textContent='🏢 '+CFG.bizName;
+}
+
+async function switchBranch(idx){
+  if(!BUYERS[idx]) return;
+  const buyer = BUYERS[idx];
+  ACTIVE_BRANCH = idx;
+  BID = buyer.id;
+  ME.buyerId = buyer.id;
+  CFG = {bizName:buyer.name, currency:buyer.currency||'₦', threshold:buyer.threshold||10, address:buyer.address||''};
+  g('ctx-name').textContent = CFG.bizName;
+  updateBranchBar();
+  if(g('set-biz')) g('set-biz').value = CFG.bizName;
+  if(g('set-cur')) g('set-cur').value = CFG.currency;
+  UNSUBS.forEach(fn=>fn&&fn()); UNSUBS=[];
+  subscribeData();
+  nav('dashboard');
+  toast('Switched to '+CFG.bizName,'s');
 }
 
 // ── FIRESTORE SUBSCRIPTIONS ────────────────────────
 function subscribeData(){
   UNSUBS.forEach(fn=>fn&&fn()); UNSUBS=[];
   if(SA_MODE && !BID){
+    // SA: load all buyers (branches)
     const u1 = db.collection('buyers').onSnapshot(snap=>{
       BUYERS = snap.docs.map(d=>({id:d.id,...d.data()}));
-      updateBranchSelector();
       if(document.getElementById('pg-buyers')?.classList.contains('on')) renderBuyers();
       if(document.getElementById('pg-dashboard')?.classList.contains('on')) renderDash();
     });
     UNSUBS=[u1];
   } else if(BID){
+    // First load BUYERS list so branch switcher can work
+    if(!BUYERS.length){
+      db.collection('buyers').get().then(snap=>{ BUYERS=snap.docs.map(d=>({id:d.id,...d.data()})); updateBranchBar(); });
+    } else { updateBranchBar(); }
+
     const base = db.collection('buyers').doc(BID);
     const u1 = base.collection('products').orderBy('dateAdded','desc').onSnapshot(snap=>{
       PRODS = snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -1135,18 +1186,11 @@ function subscribeData(){
       STAFF = snap.docs.map(d=>({id:d.id,...d.data()}));
       if(g('pg-staff')?.classList.contains('on')) renderStaff();
     }, err=>console.warn('staff:',err));
-    const u5 = base.collection('customers').orderBy('createdAt','desc').onSnapshot(snap=>{
+    const u5 = base.collection('customers').orderBy('name','asc').onSnapshot(snap=>{
       CUSTOMERS = snap.docs.map(d=>({id:d.id,...d.data()}));
       if(g('pg-customers')?.classList.contains('on')) renderCustomers();
-      updateCustDatalist();
     }, err=>console.warn('customers:',err));
     UNSUBS=[u1,u2,u3,u4,u5];
-    // Also keep buyers list updated for branch selector
-    const u6 = db.collection('buyers').onSnapshot(snap=>{
-      BUYERS = snap.docs.map(d=>({id:d.id,...d.data()}));
-      updateBranchSelector();
-    });
-    UNSUBS.push(u6);
   }
 }
 
@@ -1157,7 +1201,7 @@ function nav(pg){
   const p=g('pg-'+pg); if(p) p.classList.add('on');
   const l=document.querySelector('[data-pg="'+pg+'"]'); if(l) l.classList.add('on');
   g('tb-title').textContent=pg.charAt(0).toUpperCase()+pg.slice(1);
-  const map={dashboard:renderDash,products:renderProds,sales:renderSales,reports:renderRpt,alerts:renderNotifs,staff:renderStaff,buyers:renderBuyers,customers:renderCustomers};
+  const map={dashboard:renderDash,products:renderProds,sales:renderSales,customers:renderCustomers,reports:renderRpt,alerts:renderNotifs,staff:renderStaff,buyers:renderBuyers};
   if(map[pg]) map[pg]();
   closeSB();
 }
@@ -1168,19 +1212,17 @@ function closeSB(){ g('sidebar').classList.remove('open'); g('sb-ovl').classList
 // ── LOGOUT ─────────────────────────────────────────
 function logout(){
   UNSUBS.forEach(fn=>fn&&fn()); UNSUBS=[];
-  const wasSA = SA_MODE;
   ME=null; BID=null; SA_MODE=false;
   PRODS=[]; SALES=[]; NOTIFS=[]; STAFF=[]; BUYERS=[]; CUSTOMERS=[];
   pBuf=''; sBuf=''; pDots(); sDots();
   g('l-email').value=''; g('l-pass').value='';
   g('login-err').classList.add('h');
-  // Return SA to SA screen, staff to lock screen
-  if(wasSA){ show('sa-screen'); } else { show('lock-screen'); switchTab('login'); }
+  show('lock-screen'); switchTab('login');
 }
 
 function exitCtx(){
   UNSUBS.forEach(fn=>fn&&fn()); UNSUBS=[];
-  BID=null; PRODS=[]; SALES=[]; NOTIFS=[]; STAFF=[]; CUSTOMERS=[];
+  BID=null; PRODS=[]; SALES=[]; NOTIFS=[]; STAFF=[];
   ME={id:'superadmin',name:'Super Admin',role:'superadmin'};
   g('ctx-bar').classList.add('h');
   g('sa-bar').classList.remove('h');
@@ -1202,10 +1244,12 @@ function renderDash(){
   g('st-s-s').textContent=fmt(tR)+' revenue';
   g('st-r').textContent=fmt(tR);
   g('st-l').textContent=lw.length+ot.length;
+  // Low list
   const ll=g('low-list');
   const items=[...ot,...lw].slice(0,5);
   ll.innerHTML=items.length?items.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--bord)"><div><div style="font-size:.84rem;font-weight:700">${esc(p.name)}</div><div style="font-size:.7rem;color:var(--t3)">${esc(p.category)}</div></div><span class="bdg ${p.quantity===0?'bdg-r':'bdg-a'}">${p.quantity===0?'Out':p.quantity+' left'}</span></div>`).join('')
   :'<div style="padding:18px;text-align:center;color:var(--t3);font-size:.84rem">✅ All items well stocked!</div>';
+  // Recent
   const dr=g('dash-recent');
   const rec=SALES.slice().sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp)).slice(0,5);
   dr.innerHTML=rec.length?`<table><thead><tr><th>Product</th><th>Qty</th><th>Total</th><th>Cashier</th><th>Date</th></tr></thead><tbody>${rec.map(s=>`<tr><td class="td-n">${esc(s.productName)}</td><td class="td-m">${s.quantity}</td><td class="td-m td-gr">${fmt(s.total)}</td><td style="font-size:.81rem">${esc(s.cashier||'—')}</td><td style="color:var(--t4);font-size:.77rem">${fmtDT(s.timestamp)}</td></tr>`).join('')}</tbody></table>`
@@ -1215,15 +1259,16 @@ function renderDash(){
 }
 
 function renderSADash(){
+  // SA overview across all buyers
   const totalP=BUYERS.reduce((a,b)=>a+(b.prodCount||0),0);
   const totalS=BUYERS.reduce((a,b)=>a+(b.saleCount||0),0);
   const totalR=BUYERS.reduce((a,b)=>a+(b.revenue||0),0);
-  g('st-p').textContent=BUYERS.length+' branches';
+  g('st-p').textContent=BUYERS.length+' buyers';
   g('st-s').textContent=totalS;
-  g('st-r').textContent=fmt(totalR);
+  g('st-r').textContent='$'+totalR.toFixed(2);
   g('st-l').textContent=BUYERS.length;
-  g('low-list').innerHTML='<div style="padding:14px;text-align:center;color:var(--t3);font-size:.83rem">Select a branch to view their inventory</div>';
-  g('dash-recent').innerHTML='<div class="empty" style="padding:24px"><div class="empty-icon">🏢</div><div class="empty-sub">Use the Branches page to enter a branch\'s inventory</div></div>';
+  g('low-list').innerHTML='<div style="padding:14px;text-align:center;color:var(--t3);font-size:.83rem">Select a buyer to view their inventory</div>';
+  g('dash-recent').innerHTML='<div class="empty" style="padding:24px"><div class="empty-icon">🏢</div><div class="empty-sub">Use the Buyers page to enter a buyer\'s inventory</div></div>';
 }
 
 // ── PRODUCTS ───────────────────────────────────────
@@ -1234,6 +1279,7 @@ function renderProds(){
   let list=PRODS.filter(p=>(!q||p.name.toLowerCase().includes(q)||(p.sku||'').toLowerCase().includes(q))&&(!cat||p.category===cat));
   list.sort((a,b)=>srt==='price'?a.price-b.price:srt==='qty'?a.quantity-b.quantity:a.name.localeCompare(b.name));
   g('prod-sub').textContent=list.length+' of '+PRODS.length+' products';
+  // Cat filter
   const cats=[...new Set(PRODS.map(p=>p.category).filter(Boolean))].sort();
   const cf=g('pc'); if(cf){const cv=cf.value;cf.innerHTML='<option value="">All Categories</option>'+cats.map(c=>`<option value="${esc(c)}"${c===cv?' selected':''}>${esc(c)}</option>`).join('');}
   const dl=g('cat-dl'); if(dl) dl.innerHTML=cats.map(c=>`<option value="${esc(c)}">`).join('');
@@ -1242,15 +1288,14 @@ function renderProds(){
     const lw=p.quantity>0&&p.quantity<=(p.lowAt||CFG.threshold);
     const ot=p.quantity===0;
     const em=EMOJI[p.category]||'📦';
-    const uLabel = p.unitsPerPack>1 ? ` · ${p.unitsPerPack}/${p.unitType||'pack'}` : '';
     return `<div class="pc ${ot?'out':lw?'low':''}">
       <div class="pc-img">${em}${ot?'<span class="pc-bdg bdg bdg-r">Out</span>':lw?'<span class="pc-bdg bdg bdg-a">Low</span>':''}
       </div>
       <div class="pc-body">
         <div class="pc-cat">${esc(p.category)}</div>
         <div class="pc-name">${esc(p.name)}</div>
-        <div class="pc-sku">${p.sku||'No SKU'}${uLabel}</div>
-        <div class="pc-row"><span class="pc-price">${fmt(p.price)}</span><span class="pc-qty ${ot?'ot':lw?'lw':'ok'}">${ot?'Out':p.quantity+' '+(p.unitType||'units')}</span></div>
+        <div class="pc-sku">${p.sku||'No SKU'}</div>
+        <div class="pc-row"><span class="pc-price">${fmt(p.price)}</span><span class="pc-qty ${ot?'ot':lw?'lw':'ok'}">${ot?'Out':p.quantity+' units'}</span></div>
         <div class="pc-btns">
           ${can('prod')?`<button class="btn btn-o btn-sm" style="flex:1;font-size:.77rem" onclick="openProdModal('${p.id}')">✏️ Edit</button>`:''}
           ${can('prod')?`<button class="btn btn-o btn-sm" style="font-size:.77rem;color:#2563EB" onclick="openStockModal('${p.id}')">📦</button>`:''}
@@ -1259,7 +1304,7 @@ function renderProds(){
       </div>
     </div>`;
   }).join('')
-  :'<div class="empty" style="grid-column:1/-1"><div class="empty-icon">📦</div><div class="empty-title">No products</div><div class="empty-sub">'+(can('prod')?'Click "+ Add Product" to start':'No products in inventory yet')+'</div></div>';
+  :'<div class="empty" style="grid-column:1/-1"><div class="empty-icon">📦</div><div class="empty-title">No products</div><div class="empty-sub">'+( can('prod')?'Click "+ Add Product" to start':'No products in inventory yet')+'</div></div>';
 }
 
 // ── PRODUCT MODAL ─────────────────────────────────
@@ -1272,34 +1317,26 @@ function openProdModal(id){
     g('pm-name').value=p.name; g('pm-cat').value=p.category||''; g('pm-sku').value=p.sku||'';
     g('pm-price').value=p.price; g('pm-cost').value=p.costPrice||''; g('pm-qty').value=p.quantity;
     g('pm-low').value=p.lowAt||CFG.threshold; g('pm-sup').value=p.supplier||'';
-    g('pm-unit').value=p.unitType||'unit'; g('pm-ups').value=p.unitsPerPack||'';
     g('pm-save').textContent='Save Changes';
   } else {
     g('pm-t').textContent='Add Product'; g('pm-id').value='';
-    ['pm-name','pm-cat','pm-sku','pm-price','pm-cost','pm-qty','pm-sup','pm-ups'].forEach(f=>g(f).value='');
-    g('pm-low').value=CFG.threshold; g('pm-unit').value='unit'; g('pm-save').textContent='Add Product';
+    ['pm-name','pm-cat','pm-sku','pm-price','pm-cost','pm-qty','pm-sup'].forEach(f=>g(f).value='');
+    g('pm-low').value=CFG.threshold; g('pm-save').textContent='Add Product';
   }
   openM('prod-modal');
 }
 
 async function saveProd(){
   if(!can('prod')){toast('⛔ No permission','e');return;}
-  const effectiveProdBID = BID || ME?.buyerId; if(!effectiveProdBID){toast('Enter a branch first','e');return;}
+  const effectiveProdBID = BID || ME?.buyerId; if(!effectiveProdBID){toast('Enter a buyer first from the Buyers page','e');return;}
   const name=g('pm-name').value.trim(), cat=g('pm-cat').value.trim();
-  const price=parseFloat(g('pm-price').value), qty=parseFloat(g('pm-qty').value);
+  const price=parseFloat(g('pm-price').value), qty=parseInt(g('pm-qty').value);
   const eid=g('pm-id').value;
   if(!name) return ferr('pm-err','Product name required.');
   if(!cat)  return ferr('pm-err','Category required.');
   if(isNaN(price)||price<0) return ferr('pm-err','Enter valid price.');
   if(isNaN(qty)||qty<0)     return ferr('pm-err','Enter valid quantity.');
-  const ups = parseInt(g('pm-ups').value)||1;
-  const data={name,category:cat,price,quantity:qty,sku:g('pm-sku').value.trim(),
-    costPrice:parseFloat(g('pm-cost').value)||0,
-    lowAt:parseFloat(g('pm-low').value)||CFG.threshold,
-    supplier:g('pm-sup').value.trim(),
-    unitType:g('pm-unit').value||'unit',
-    unitsPerPack:ups,
-    buyerId:effectiveProdBID};
+  const data={name,category:cat,price,quantity:qty,sku:g('pm-sku').value.trim(),costPrice:parseFloat(g('pm-cost').value)||0,lowAt:parseInt(g('pm-low').value)||CFG.threshold,supplier:g('pm-sup').value.trim(),buyerId:effectiveProdBID};
   try{
     const col=db.collection('buyers').doc(effectiveProdBID).collection('products');
     if(eid){ await col.doc(eid).update(data); }
@@ -1318,15 +1355,9 @@ async function confirmDel(){
 }
 
 // ── STOCK ADJUST ───────────────────────────────────
-function openStockModal(pid){
-  if(!can('prod')){toast('⛔ No permission','e');return;}
-  const p=PRODS.find(x=>x.id===pid); if(!p)return;
-  g('sa-info').textContent=p.name+' — current: '+p.quantity+' '+(p.unitType||'units');
-  g('sa-pid').value=pid; g('sa-qty').value=''; g('sa-reason').value=''; g('sa-type').value='add';
-  openM('stock-modal');
-}
+function openStockModal(pid){ if(!can('prod')){toast('⛔ No permission','e');return;} const p=PRODS.find(x=>x.id===pid); if(!p)return; g('sa-info').textContent=p.name+' — current: '+p.quantity+' units'; g('sa-pid').value=pid; g('sa-qty').value=''; g('sa-reason').value=''; g('sa-type').value='add'; openM('stock-modal'); }
 async function saveStockAdj(){
-  const pid=g('sa-pid').value, type=g('sa-type').value, qty=parseFloat(g('sa-qty').value), reason=g('sa-reason').value.trim();
+  const pid=g('sa-pid').value, type=g('sa-type').value, qty=parseInt(g('sa-qty').value), reason=g('sa-reason').value.trim();
   const adjBID = BID || ME?.buyerId; if(!pid||!adjBID)return;
   if(isNaN(qty)||qty<0){toast('Enter valid quantity','e');return;}
   const p=PRODS.find(x=>x.id===pid); if(!p)return;
@@ -1334,12 +1365,8 @@ async function saveStockAdj(){
   if(type==='add') newQty+=qty;
   else if(type==='remove'){if(qty>p.quantity){toast('Cannot remove more than stock','e');return;} newQty-=qty;}
   else newQty=qty;
-  newQty=Math.round(newQty*100)/100;
-  try{
-    await db.collection('buyers').doc(adjBID).collection('products').doc(pid).update({quantity:newQty});
-    addNotif('info','Stock Adjusted',p.name+': '+p.quantity+' → '+newQty+' '+(p.unitType||'units')+'. '+(reason||''));
-    closeM('stock-modal'); toast('Stock updated → '+newQty+' '+(p.unitType||'units'),'s');
-  }catch(e){ toast('Failed: '+e.message,'e'); }
+  try{ await db.collection('buyers').doc(adjBID).collection('products').doc(pid).update({quantity:newQty}); addNotif('info','Stock Adjusted',p.name+': '+p.quantity+' → '+newQty+' units. '+(reason||'')); closeM('stock-modal'); toast('Stock updated → '+newQty+' units','s'); }
+  catch(e){ toast('Failed: '+e.message,'e'); }
 }
 
 // ── SALES ──────────────────────────────────────────
@@ -1348,101 +1375,59 @@ function renderSales(){
   const list=SALES.filter(s=>(!q||s.productName?.toLowerCase().includes(q))&&(!date||fmtD(s.timestamp)===date));
   g('sales-sub').textContent=list.length+' transactions';
   const tb=g('sales-tb');
-  tb.innerHTML=list.length?list.map((s,i)=>{
-    const disc = s.discountAmt||0;
-    return `<tr><td style="color:var(--t4);font-size:.77rem">${list.length-i}</td><td class="td-n">${esc(s.productName)}</td><td class="td-m">${s.quantity}</td><td class="td-m">${fmt(s.unitPrice)}</td><td class="td-m" style="color:${disc>0?'#D97706':'var(--t4)'}">${disc>0?'-'+fmt(disc):'—'}</td><td class="td-m td-gr">${fmt(s.total)}</td><td style="font-size:.81rem">${esc(s.cashier||'—')}</td><td style="color:var(--t4);font-size:.77rem">${fmtDT(s.timestamp)}</td><td><button class="btn btn-o btn-sm" style="font-size:.74rem" onclick="showRcpt('${s.id}')">🧾</button></td></tr>`;
-  }).join('')
-  :'<tr><td colspan="9"><div class="empty"><div class="empty-icon">💳</div><div class="empty-sub">No sales yet</div></div></td></tr>';
+  tb.innerHTML=list.length?list.map((s,i)=>`<tr><td style="color:var(--t4);font-size:.77rem">${list.length-i}</td><td class="td-n">${esc(s.productName)}</td><td class="td-m">${s.quantity}</td><td class="td-m">${fmt(s.unitPrice)}</td><td class="td-m td-gr">${fmt(s.total)}</td><td style="font-size:.81rem">${esc(s.cashier||'—')}</td><td style="color:var(--t4);font-size:.77rem">${fmtDT(s.timestamp)}</td><td><button class="btn btn-o btn-sm" style="font-size:.74rem" onclick="showRcpt('${s.id}')">🧾</button></td></tr>`).join('')
+  :'<tr><td colspan="8"><div class="empty"><div class="empty-icon">💳</div><div class="empty-sub">No sales yet</div></div></td></tr>';
 }
 
 // ── CART STATE ──────────────────────────────────────
-let CART = [];
-// Each item: {productId, name, category, qty, unitPrice, discAmt, subtotal}
+let CART = [];  // [{productId, name, category, qty, unitPrice, subtotal}]
 
 function openSaleModal(){
   if(!can('sale')){toast('⛔ No permission to record sales','e');return;}
   const activeBID = BID || ME?.buyerId;
   if(!activeBID){toast('You need to be logged into a branch account to record sales.','e');return;}
+  // Reset everything
   CART = [];
   g('sm-err').classList.add('h');
   g('sm-info').classList.add('h');
   g('sm-qty').value = '1';
   g('sm-cust').value = '';
-  g('sm-cust-id').value = '';
-  g('sm-bill-disc').value = '';
-  g('sm-item-disc').value = '';
-  g('sm-item-disc-type').value = 'pct';
-  g('item-disc-row').classList.add('h');
-  g('half-row').style.display='none';
   g('cart-clear-btn').style.display = 'none';
+  if(g('disc-item')) g('disc-item').value = '';
+  if(g('disc-bill')) g('disc-bill').value = '';
+  if(g('disc-savings')) g('disc-savings').textContent = fmt(0);
+  if(g('cart-subtotal-label')) g('cart-subtotal-label').textContent = '';
+  hideCustSuggestions();
   renderCart();
+  // Populate product dropdown
   const sel = g('sm-prod');
   sel.innerHTML = '<option value="">— Select product —</option>' +
     PRODS.filter(p=>p.quantity>0).map(p=>
-      `<option value="${p.id}" data-p="${p.price}" data-q="${p.quantity}" data-ups="${p.unitsPerPack||1}" data-ut="${p.unitType||'unit'}">${esc(p.name)} (${p.quantity} ${p.unitType||'units'} in stock)</option>`
+      `<option value="${p.id}" data-p="${p.price}" data-q="${p.quantity}" data-name="${esc(p.name)}">${esc(p.name)} (${p.quantity} in stock)</option>`
     ).join('');
   openM('sale-modal');
 }
 
 function onSP(){
   const sel=g('sm-prod'), opt=sel.options[sel.selectedIndex];
-  if(!opt.value){ g('sm-info').classList.add('h'); g('half-row').style.display='none'; return; }
+  if(!opt.value){ g('sm-info').classList.add('h'); return; }
   const price=parseFloat(opt.dataset.p), qty=parseFloat(opt.dataset.q);
-  const ups=parseInt(opt.dataset.ups)||1;
-  const ut=opt.dataset.ut||'unit';
   g('sm-qty').value = '1';
   g('sm-qty').max = qty;
-  g('sm-info').textContent = qty+' '+ut+' in stock · '+fmt(price)+' each';
+  g('sm-qty').step = '0.5';
+  g('sm-qty').min = '0.5';
+  g('sm-info').textContent = qty+' in stock · '+fmt(price)+' each · ½ unit = '+fmt(price*0.5);
   g('sm-info').classList.remove('h');
-  // Show half-pack buttons
-  g('half-row').style.display='flex';
-  const hpBtn = g('half-pack-btn');
-  const qpBtn = g('qtr-pack-btn');
-  if(ups>1){
-    hpBtn.style.display='inline-block';
-    hpBtn.textContent='½ '+ut.charAt(0).toUpperCase()+ut.slice(1)+' ('+ups/2+' units)';
-    qpBtn.style.display='inline-block';
-    qpBtn.textContent='¼ '+ut.charAt(0).toUpperCase()+ut.slice(1)+' ('+ups/4+' units)';
-  } else {
-    hpBtn.style.display='none';
-    qpBtn.style.display='none';
+}
+
+function setQtyChip(val){
+  g('sm-qty').value = val;
+  const sel=g('sm-prod'), opt=sel.options[sel.selectedIndex];
+  if(opt.value){
+    const price=parseFloat(opt.dataset.p);
+    g('sm-info').textContent = 'Qty: '+val+' · Subtotal: '+fmt(price*val);
+    g('sm-info').classList.remove('h');
   }
-  // Update item disc preview
-  updateItemDiscPreview();
-}
-
-function setHalfQty(type){
-  const sel=g('sm-prod'), opt=sel.options[sel.selectedIndex];
-  if(!opt.value){ toast('Select a product first','w'); return; }
-  const ups=parseInt(opt.dataset.ups)||1;
-  let newQty;
-  if(type===0.5) newQty=0.5;
-  else if(type==='half-pack') newQty=Math.round((ups/2)*100)/100;
-  else if(type==='qtr-pack') newQty=Math.round((ups/4)*100)/100;
-  else newQty=parseFloat(type);
-  g('sm-qty').value = newQty;
-  updateItemDiscPreview();
-}
-
-function toggleItemDiscount(){
-  const row = g('item-disc-row');
-  row.classList.toggle('h');
-}
-
-function updateItemDiscPreview(){
-  const sel=g('sm-prod'), opt=sel.options[sel.selectedIndex];
-  if(!opt.value){ g('item-disc-preview').textContent=''; return; }
-  const price=parseFloat(opt.dataset.p);
-  const qty=parseFloat(g('sm-qty').value)||1;
-  const base=price*qty;
-  const discVal=parseFloat(g('sm-item-disc').value)||0;
-  const discType=g('sm-item-disc-type').value;
-  let discAmt=0;
-  if(discType==='pct') discAmt=base*(discVal/100);
-  else discAmt=discVal;
-  discAmt=Math.min(discAmt,base);
-  const after=base-discAmt;
-  g('item-disc-preview').textContent=discAmt>0?'→ '+fmt(after):'';
 }
 
 function updTotal(){}  // kept for compatibility
@@ -1452,6 +1437,7 @@ function addToCart(){
   if(!opt.value){ toast('Select a product first','w'); return; }
   const qty = parseFloat(g('sm-qty').value);
   if(!qty||qty<=0){ toast('Enter a valid quantity','w'); return; }
+  if(qty % 0.5 !== 0){ toast('Quantity must be in increments of 0.5 (e.g. 0.5, 1, 1.5)','w'); return; }
 
   const pid   = opt.value;
   const price = parseFloat(opt.dataset.p);
@@ -1459,50 +1445,53 @@ function addToCart(){
   const name  = opt.text.split(' (')[0];
   const prod  = PRODS.find(p=>p.id===pid);
 
+  // Check qty vs remaining stock (accounting for what's already in cart)
   const alreadyInCart = CART.find(c=>c.productId===pid);
   const alreadyQty    = alreadyInCart ? alreadyInCart.qty : 0;
-  if(alreadyQty + qty > stock + 0.001){
-    toast('Only '+(stock-alreadyQty)+' more '+((prod?.unitType)||'units')+' available','e'); return;
+  if(alreadyQty + qty > stock){
+    toast('Only '+(stock-alreadyQty)+' more units available','e'); return;
   }
 
-  // Item discount
-  const discVal=parseFloat(g('sm-item-disc').value)||0;
-  const discType=g('sm-item-disc-type').value;
-  const baseSubtotal = qty * price;
-  let discAmt=0;
-  if(discVal>0){
-    if(discType==='pct') discAmt=baseSubtotal*(discVal/100);
-    else discAmt=discVal;
-    discAmt=Math.min(discAmt,baseSubtotal);
-  }
-  const subtotal = Math.round((baseSubtotal - discAmt)*100)/100;
+  // Apply per-item discount if set
+  const itemDisc = parseFloat(g('disc-item')?.value||0)||0;
+  const discountedPrice = itemDisc > 0 ? price * (1 - itemDisc/100) : price;
 
   if(alreadyInCart){
     alreadyInCart.qty += qty;
-    alreadyInCart.qty = Math.round(alreadyInCart.qty*100)/100;
-    alreadyInCart.discAmt = (alreadyInCart.discAmt||0)+discAmt;
-    alreadyInCart.subtotal = Math.round((alreadyInCart.qty*price - alreadyInCart.discAmt)*100)/100;
+    alreadyInCart.subtotal = parseFloat((alreadyInCart.qty * discountedPrice).toFixed(4));
+    alreadyInCart.itemDiscount = itemDisc;
+    alreadyInCart.unitPrice = discountedPrice;
   } else {
     CART.push({
       productId: pid,
       name,
       category: prod?.category||'',
       qty,
-      unitPrice: price,
-      discAmt,
-      subtotal
+      unitPrice: discountedPrice,
+      basePrice: price,
+      itemDiscount: itemDisc,
+      subtotal: parseFloat((qty * discountedPrice).toFixed(4))
     });
   }
 
   renderCart();
   g('sm-prod').value = '';
   g('sm-qty').value  = '1';
-  g('sm-item-disc').value='';
   g('sm-info').classList.add('h');
-  g('half-row').style.display='none';
-  g('item-disc-row').classList.add('h');
-  g('item-disc-preview').textContent='';
-  toast(name+' added to cart ✓','s');
+  const qtyLabel = qty === 0.5 ? '½' : qty === Math.floor(qty) ? qty : qty;
+  toast(qtyLabel+' × '+name+' added to cart ✓','s');
+}
+
+function recalcCart(){
+  // Re-apply item discount to all existing items then re-render
+  const itemDisc = parseFloat(g('disc-item')?.value||0)||0;
+  CART.forEach(item=>{
+    const base = item.basePrice||item.unitPrice;
+    item.itemDiscount = itemDisc;
+    item.unitPrice = itemDisc>0 ? base*(1-itemDisc/100) : base;
+    item.subtotal = parseFloat((item.qty * item.unitPrice).toFixed(4));
+  });
+  renderCart();
 }
 
 function renderCart(){
@@ -1514,41 +1503,42 @@ function renderCart(){
     container.classList.add('h');
     emptyHint.style.display = 'block';
     clearBtn.style.display  = 'none';
+    g('cart-total').textContent = fmt(0);
     return;
   }
   container.classList.remove('h');
   emptyHint.style.display = 'none';
   clearBtn.style.display  = 'inline-flex';
 
-  const cartSubtotal = CART.reduce((a,c)=>a+c.subtotal,0);
+  const subtotal = CART.reduce((a,c)=>a+c.subtotal,0);
+  const billDisc = parseFloat(g('disc-bill')?.value||0)||0;
+  const billDiscAmt = subtotal * (billDisc/100);
+  const grandTotal = parseFloat((subtotal - billDiscAmt).toFixed(2));
 
-  // Bill discount calculation
-  const billDiscVal=parseFloat(g('sm-bill-disc')?.value)||0;
-  const billDiscType=g('sm-bill-disc-type')?.value||'pct';
-  let billDiscAmt=0;
-  if(billDiscVal>0){
-    if(billDiscType==='pct') billDiscAmt=cartSubtotal*(billDiscVal/100);
-    else billDiscAmt=billDiscVal;
-    billDiscAmt=Math.min(billDiscAmt,cartSubtotal);
-  }
-  const grandTotal=Math.round((cartSubtotal-billDiscAmt)*100)/100;
+  // Calculate total savings
+  const itemDisc = parseFloat(g('disc-item')?.value||0)||0;
+  const originalSubtotal = CART.reduce((a,c)=>a+(c.qty*(c.basePrice||c.unitPrice)),0);
+  const totalSavings = parseFloat((originalSubtotal - grandTotal).toFixed(2));
+  if(g('disc-savings')) g('disc-savings').textContent = totalSavings>0 ? fmt(totalSavings) : fmt(0);
+  if(g('cart-subtotal-label')) g('cart-subtotal-label').textContent = billDisc>0 ? 'After '+billDisc+'% bill discount' : (itemDisc>0?'Item discount applied':'');
 
-  const preview=g('bill-disc-preview');
-  if(preview) preview.textContent=billDiscAmt>0?'Saving '+fmt(billDiscAmt):'';
-
-  g('cart-items').innerHTML = CART.map((item,i)=>`
+  g('cart-items').innerHTML = CART.map((item,i)=>{
+    const qtyDisplay = item.qty === 0.5 ? '½' : (item.qty % 1 === 0 ? item.qty : item.qty);
+    const discBadge = item.itemDiscount>0 ? `<span style="font-size:.67rem;background:rgba(239,68,68,.12);color:#EF4444;padding:1px 5px;border-radius:4px;margin-left:4px">-${item.itemDiscount}%</span>` : '';
+    return `
     <div class="cart-row">
       <div style="flex:1;min-width:0">
-        <div class="cart-item-name">${esc(item.name)}</div>
-        <div class="cart-item-detail">${fmt(item.unitPrice)} × ${item.qty}${item.discAmt>0?' (disc: -'+fmt(item.discAmt)+')':''} · <strong style="color:#059669">${fmt(item.subtotal)}</strong></div>
+        <div class="cart-item-name">${esc(item.name)}${discBadge}</div>
+        <div class="cart-item-detail">${fmt(item.unitPrice)} each${item.itemDiscount>0?' (was '+fmt(item.basePrice||item.unitPrice)+')':''} · Subtotal: <strong style="color:#059669">${fmt(item.subtotal)}</strong></div>
       </div>
       <div class="cart-qty-wrap">
         <button class="cart-qty-btn" onclick="changeCartQty(${i},-0.5)">−</button>
-        <span class="cart-qty-num">${item.qty}</span>
+        <span class="cart-qty-num">${qtyDisplay}</span>
         <button class="cart-qty-btn" onclick="changeCartQty(${i},0.5)">+</button>
       </div>
       <button class="cart-remove" onclick="removeFromCart(${i})" title="Remove">✕</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   g('cart-total').textContent = fmt(grandTotal);
 }
@@ -1557,13 +1547,11 @@ function changeCartQty(index, delta){
   const item  = CART[index]; if(!item) return;
   const prod  = PRODS.find(p=>p.id===item.productId);
   const stock = prod?.quantity||0;
-  const newQty= Math.round((item.qty + delta)*100)/100;
-  if(newQty <= 0){ removeFromCart(index); return; }
-  if(newQty > stock + 0.001){ toast('Only '+stock+' in stock','e'); return; }
+  const newQty= parseFloat((item.qty + delta).toFixed(2));
+  if(newQty < 0.5){ removeFromCart(index); return; }
+  if(newQty > stock){ toast('Only '+stock+' units in stock','e'); return; }
   item.qty     = newQty;
-  // Recalculate subtotal keeping disc proportional if any
-  item.subtotal= Math.round((newQty * item.unitPrice - (item.discAmt||0))*100)/100;
-  if(item.subtotal<0) item.subtotal=0;
+  item.subtotal= parseFloat((newQty * item.unitPrice).toFixed(4));
   renderCart();
 }
 
@@ -1583,37 +1571,30 @@ async function saveSale(){
   if(!activeBID){ ferr('sm-err','No branch context. Please logout and log back in.'); return; }
   if(CART.length === 0){ ferr('sm-err','Cart is empty — add at least one product.'); return; }
 
-  const cust         = g('sm-cust').value.trim();
-  const custId       = g('sm-cust-id').value.trim();
-  const cartSubtotal = CART.reduce((a,c)=>a+c.subtotal,0);
+  const custVal       = g('sm-cust').value.trim();
+  const billDisc      = parseFloat(g('disc-bill')?.value||0)||0;
+  const subtotal      = CART.reduce((a,c)=>a+c.subtotal,0);
+  const billDiscAmt   = parseFloat((subtotal*(billDisc/100)).toFixed(2));
+  const grandTotal    = parseFloat((subtotal - billDiscAmt).toFixed(2));
+  const receiptId     = 'RCP-'+Date.now().toString(36).toUpperCase();
+  const cashierName   = ME.name||'Staff';
+  const now           = firebase.firestore.FieldValue.serverTimestamp();
 
-  // Bill discount
-  const billDiscVal=parseFloat(g('sm-bill-disc')?.value)||0;
-  const billDiscType=g('sm-bill-disc-type')?.value||'pct';
-  let billDiscAmt=0;
-  if(billDiscVal>0){
-    if(billDiscType==='pct') billDiscAmt=cartSubtotal*(billDiscVal/100);
-    else billDiscAmt=billDiscVal;
-    billDiscAmt=Math.min(billDiscAmt,cartSubtotal);
-  }
-  const grandTotal   = Math.round((cartSubtotal - billDiscAmt)*100)/100;
-  const receiptId    = 'RCP-'+Date.now().toString(36).toUpperCase();
-  const cashierName  = ME.name||'Staff';
-  const now          = firebase.firestore.FieldValue.serverTimestamp();
+  // Resolve customer ID if matched
+  const matchedCust = CUSTOMERS.find(c=>c.name===custVal || c.phone===custVal);
+  const custId      = matchedCust?.id || null;
+  const custName    = custVal || 'Walk-in';
 
   try{
     const batch = db.batch();
     const saleItems = [];
-    const billDiscPerItem = billDiscAmt / CART.length; // distribute evenly
 
     for(const item of CART){
       const prod = PRODS.find(p=>p.id===item.productId);
       if(!prod){ ferr('sm-err','Product "'+item.name+'" not found.'); return; }
-      if(item.qty > prod.quantity + 0.001){ ferr('sm-err','Not enough stock for "'+item.name+'". Only '+prod.quantity+' available.'); return; }
+      if(item.qty > prod.quantity){ ferr('sm-err','Not enough stock for "'+item.name+'". Only '+prod.quantity+' available.'); return; }
 
-      const itemBillDisc = Math.round(billDiscPerItem*100)/100;
-      const finalTotal   = Math.round((item.subtotal - itemBillDisc)*100)/100;
-
+      // Each cart item becomes one sale record
       const saleRef = db.collection('buyers').doc(activeBID).collection('sales').doc();
       batch.set(saleRef, {
         productId:    item.productId,
@@ -1621,36 +1602,38 @@ async function saveSale(){
         category:     item.category||'',
         quantity:     item.qty,
         unitPrice:    item.unitPrice,
-        discountAmt:  (item.discAmt||0)+itemBillDisc,
-        total:        Math.max(finalTotal,0),
+        basePrice:    item.basePrice||item.unitPrice,
+        itemDiscount: item.itemDiscount||0,
+        billDiscount: billDisc,
+        total:        parseFloat((item.subtotal * (1 - billDisc/100)).toFixed(2)),
         cashier:      cashierName,
-        customer:     cust,
+        customer:     custName,
         customerId:   custId||'',
         receiptId,
         timestamp:    now,
         buyerId:      activeBID
       });
 
-      // Deduct stock (supports decimal)
+      // Deduct stock (fractional supported)
       batch.update(
         db.collection('buyers').doc(activeBID).collection('products').doc(item.productId),
         {quantity: firebase.firestore.FieldValue.increment(-item.qty)}
       );
 
-      saleItems.push({...item, finalTotal:Math.max(finalTotal,0)});
+      saleItems.push({...item, discountedTotal: parseFloat((item.subtotal*(1-billDisc/100)).toFixed(2))});
     }
 
     await batch.commit();
 
-    // Update customer purchase history
+    // Update customer purchase history if linked
     if(custId){
       try{
         await db.collection('buyers').doc(activeBID).collection('customers').doc(custId).update({
-          lastPurchase: now,
-          totalPurchases: firebase.firestore.FieldValue.increment(grandTotal),
-          purchaseCount: firebase.firestore.FieldValue.increment(1)
+          lastPurchase: firebase.firestore.FieldValue.serverTimestamp(),
+          totalSpent:   firebase.firestore.FieldValue.increment(grandTotal),
+          purchaseCount:firebase.firestore.FieldValue.increment(1)
         });
-      }catch(e){ console.warn('customer update:',e); }
+      }catch(e){console.warn('cust update:',e);}
     }
 
     // Low stock checks
@@ -1658,50 +1641,59 @@ async function saveSale(){
       const prod   = PRODS.find(p=>p.id===item.productId);
       const newQty = (prod?.quantity||0) - item.qty;
       if(newQty <= (prod?.lowAt||CFG.threshold))
-        addNotif('warn','Low Stock', item.name+' is low ('+newQty+' '+(prod?.unitType||'units')+' left).');
+        addNotif('warn','Low Stock', item.name+' is low ('+newQty+' units left).');
     }
 
     closeM('sale-modal');
-    toast('Sale complete! '+fmt(grandTotal)+' · '+CART.length+' item'+(CART.length>1?'s':''),'s');
-    setTimeout(()=>showCartReceipt(saleItems, cust, grandTotal, receiptId, cashierName, null, billDiscAmt), 400);
+    toast('Sale complete! '+fmt(grandTotal)+(billDisc>0?' ('+billDisc+'% off)':'')+' · '+CART.length+' item'+(CART.length>1?'s':''),'s');
+    setTimeout(()=>showCartReceipt(saleItems, custName, grandTotal, receiptId, cashierName, null, billDisc), 400);
     CART = [];
 
   }catch(e){ ferr('sm-err','Failed: '+e.message); }
 }
 
 // ── RECEIPT ────────────────────────────────────────
+// Show receipt for a single sale (from sales history)
 function showRcpt(sid){
   const s = SALES.find(x=>x.id===sid); if(!s) return;
+  // Check if this sale has siblings (same receiptId = multi-item cart)
   if(s.receiptId){
     const siblings = SALES.filter(x=>x.receiptId===s.receiptId);
-    const items    = siblings.map(x=>({name:x.productName,qty:x.quantity,unitPrice:x.unitPrice,subtotal:x.total,discAmt:x.discountAmt||0}));
+    const items    = siblings.map(x=>({name:x.productName,qty:x.quantity,unitPrice:x.unitPrice,subtotal:x.total}));
     const total    = siblings.reduce((a,x)=>a+x.total,0);
-    showCartReceipt(items, s.customer, total, s.receiptId, s.cashier, s.timestamp, 0);
+    showCartReceipt(items, s.customer, total, s.receiptId, s.cashier, s.timestamp);
   } else {
     showRcptData(s);
   }
 }
 
+// Legacy single-item receipt
 function showRcptData(s){
   const bars=Array.from({length:28},(_,i)=>`<div style="width:${i%3===0?3:2}px;height:${28+Math.sin(i)*8}px;background:#111;display:inline-block;margin:0 0.5px"></div>`).join('');
-  const disc=s.discountAmt||0;
-  g('rcpt-body').innerHTML=`<div class="rcpt"><div class="rcpt-logo">🏪 ${esc(CFG.bizName||'Fujup Venture')}</div><div class="rcpt-sub">${esc(CFG.address||'')}${CFG.address?'<br>':''}Receipt #${String(s.id||'').slice(-6).toUpperCase()}</div><hr class="rcpt-div"/><div class="rcpt-row"><span>${esc(s.productName)}</span></div><div class="rcpt-row"><span style="color:#6B7280">  ${s.quantity} × ${fmt(s.unitPrice)}</span><span>${fmt(s.quantity*s.unitPrice)}</span></div>${disc>0?`<div class="rcpt-row"><span style="color:#D97706">  Discount</span><span style="color:#D97706">-${fmt(disc)}</span></div>`:''}<hr class="rcpt-div"/><div class="rcpt-row rcpt-tot"><span>TOTAL</span><span>${fmt(s.total)}</span></div><hr class="rcpt-div"/><div class="rcpt-row"><span style="color:#6B7280">Cashier</span><span>${esc(s.cashier||'—')}</span></div><div class="rcpt-row"><span style="color:#6B7280">Date</span><span>${fmtDT(s.timestamp)}</span></div>${s.customer?`<div class="rcpt-row"><span style="color:#6B7280">Customer</span><span>${esc(s.customer)}</span></div>`:''}<hr class="rcpt-div"/><div style="text-align:center;margin:4px 0">${bars}</div><div class="rcpt-foot">Thank you! · Fujup Venture</div></div>`;
+  g('rcpt-body').innerHTML=`<div class="rcpt"><div class="rcpt-logo">${esc(CFG.bizName||'Fujup Venture')}</div><div class="rcpt-sub">${esc(CFG.address||'')}${CFG.address?'<br>':''}Receipt #${String(s.id||'').slice(-6).toUpperCase()}</div><hr class="rcpt-div"/><div class="rcpt-row"><span>${esc(s.productName)}</span></div><div class="rcpt-row"><span style="color:#6B7280">  ${s.quantity} × ${fmt(s.unitPrice)}</span><span>${fmt(s.total)}</span></div><hr class="rcpt-div"/><div class="rcpt-row rcpt-tot"><span>TOTAL</span><span>${fmt(s.total)}</span></div><hr class="rcpt-div"/><div class="rcpt-row"><span style="color:#6B7280">Cashier</span><span>${esc(s.cashier||'—')}</span></div><div class="rcpt-row"><span style="color:#6B7280">Date</span><span>${fmtDT(s.timestamp)}</span></div>${s.customer?`<div class="rcpt-row"><span style="color:#6B7280">Customer</span><span>${esc(s.customer)}</span></div>`:''}<hr class="rcpt-div"/><div style="text-align:center;margin:4px 0">${bars}</div><div class="rcpt-foot">Thank you! · Fujup Venture</div></div>`;
   openM('rcpt-modal');
 }
 
+// Multi-item cart receipt
 function showCartReceipt(items, customer, grandTotal, receiptId, cashier, timestamp, billDisc){
   const bars  = Array.from({length:28},(_,i)=>`<div style="width:${i%3===0?3:2}px;height:${28+Math.sin(i)*8}px;background:#111;display:inline-block;margin:0 0.5px"></div>`).join('');
   const date  = fmtDT(timestamp||new Date());
   const rcpNum= String(receiptId||Date.now()).slice(-8).toUpperCase();
-  const rows  = items.map(item=>`
-    <div class="rcpt-row"><span style="font-weight:700">${esc(item.name)}</span></div>
-    <div class="rcpt-row"><span style="color:#6B7280;padding-left:8px">${item.qty} × ${fmt(item.unitPrice)}</span><span>${fmt(item.qty*item.unitPrice)}</span></div>
-    ${(item.discAmt>0)?`<div class="rcpt-row"><span style="color:#D97706;padding-left:8px">Discount</span><span style="color:#D97706">-${fmt(item.discAmt)}</span></div>`:''}
-  `).join('<div style="height:4px"></div>');
+  const subtotalAmt = items.reduce((a,c)=>a+(c.subtotal||c.qty*c.unitPrice),0);
+  const rows  = items.map(item=>{
+    const qtyLabel = item.qty===0.5?'½':(item.qty%1===0?item.qty:item.qty);
+    const discNote = item.itemDiscount>0 ? ` <span style="font-size:.65rem;color:#EF4444">(-${item.itemDiscount}%)</span>` : '';
+    return `
+    <div class="rcpt-row"><span style="font-weight:700">${esc(item.name)}${discNote}</span></div>
+    <div class="rcpt-row"><span style="color:#6B7280;padding-left:8px">${qtyLabel} × ${fmt(item.unitPrice)}</span><span>${fmt(item.subtotal||item.qty*item.unitPrice)}</span></div>`;
+  }).join('<div style="height:4px"></div>');
+  const discRow = billDisc>0 ? `
+    <div class="rcpt-row"><span style="color:#6B7280">Subtotal</span><span>${fmt(subtotalAmt)}</span></div>
+    <div class="rcpt-row"><span style="color:#EF4444">Bill Discount (${billDisc}%)</span><span style="color:#EF4444">-${fmt(subtotalAmt*(billDisc/100))}</span></div>` : '';
 
   g('rcpt-body').innerHTML=`
     <div class="rcpt">
-      <div class="rcpt-logo">🏪 ${esc(CFG.bizName||'Fujup Venture')}</div>
+      <div class="rcpt-logo">${esc(CFG.bizName||'Fujup Venture')}</div>
       <div class="rcpt-sub">${esc(CFG.address||'')}${CFG.address?'<br>':''}Receipt #${rcpNum}</div>
       <hr class="rcpt-div"/>
       <div class="rcpt-row" style="font-size:.7rem;color:#9CA3AF;margin-bottom:6px">
@@ -1709,7 +1701,7 @@ function showCartReceipt(items, customer, grandTotal, receiptId, cashier, timest
       </div>
       ${rows}
       <hr class="rcpt-div"/>
-      ${billDisc>0?`<div class="rcpt-row"><span style="color:#D97706">Bill Discount</span><span style="color:#D97706">-${fmt(billDisc)}</span></div><hr class="rcpt-div"/>`:''}
+      ${discRow}
       <div class="rcpt-row rcpt-tot">
         <span>GRAND TOTAL</span>
         <span>${fmt(grandTotal)}</span>
@@ -1717,7 +1709,7 @@ function showCartReceipt(items, customer, grandTotal, receiptId, cashier, timest
       <hr class="rcpt-div"/>
       <div class="rcpt-row"><span style="color:#6B7280">Items</span><span>${items.length} product${items.length>1?'s':''}</span></div>
       <div class="rcpt-row"><span style="color:#6B7280">Cashier</span><span>${esc(cashier||'—')}</span></div>
-      ${customer?`<div class="rcpt-row"><span style="color:#6B7280">Customer</span><span>${esc(customer)}</span></div>`:''}
+      ${customer&&customer!=='Walk-in'?`<div class="rcpt-row"><span style="color:#6B7280">Customer</span><span>${esc(customer)}</span></div>`:''}
       <div class="rcpt-row"><span style="color:#6B7280">Date</span><span>${date}</span></div>
       <hr class="rcpt-div"/>
       <div style="text-align:center;margin:4px 0">${bars}</div>
@@ -1725,7 +1717,7 @@ function showCartReceipt(items, customer, grandTotal, receiptId, cashier, timest
     </div>`;
   openM('rcpt-modal');
 }
-function printRcpt(){ const w=window.open('','_blank','width=380,height=600'); w.document.write('<html><head><title>Receipt — Fujup Venture</title><style>body{font-family:monospace;padding:16px;margin:0}*{box-sizing:border-box}</style></head><body>'+g('rcpt-body').innerHTML+'<script>window.onload=()=>window.print()</'+'script></body></html>'); w.document.close(); }
+function printRcpt(){ const w=window.open('','_blank','width=380,height=600'); w.document.write('<html><head><title>Receipt</title><style>body{font-family:monospace;padding:16px;margin:0}*{box-sizing:border-box}</style></head><body>'+g('rcpt-body').innerHTML+'<script>window.onload=()=>window.print()</'+'script></body></html>'); w.document.close(); }
 
 // ── REPORTS ────────────────────────────────────────
 function switchRpt(t,btn){ RPT_MODE=t; document.querySelectorAll('.rtab').forEach(x=>x.classList.remove('on')); btn.classList.add('on'); renderRpt(); }
@@ -1763,7 +1755,7 @@ function drawChart(cid, days, salesData){
   data.forEach(s=>{const k=new Date(s.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric'});if(map[k]!==undefined)map[k]+=s.total||0;});
   const labels=Object.keys(map),vals=Object.values(map),maxV=Math.max(...vals,1);
   const pad={t:14,r:10,b:26,l:42},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b,gx=cW/(labels.length||1);
-  [0,.5,1].forEach(pct=>{const y=pad.t+cH*(1-pct);ctx.strokeStyle='rgba(0,0,0,.05)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillStyle='#9CA3AF';ctx.font='9px Inter,sans-serif';ctx.textAlign='right';ctx.fillText((CFG.currency||'₦')+(maxV*pct).toFixed(0),pad.l-3,y+3);});
+  [0,.5,1].forEach(pct=>{const y=pad.t+cH*(1-pct);ctx.strokeStyle='rgba(0,0,0,.05)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillStyle='#9CA3AF';ctx.font='9px Inter,sans-serif';ctx.textAlign='right';ctx.fillText((CFG.currency||'$')+(maxV*pct).toFixed(0),pad.l-3,y+3);});
   const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);
   grad.addColorStop(0,'rgba(37,99,235,.18)');grad.addColorStop(1,'rgba(37,99,235,.01)');
   ctx.beginPath();vals.forEach((v,i)=>{const x=pad.l+i*gx+gx/2,y=pad.t+cH-(v/maxV)*cH;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
@@ -1775,8 +1767,8 @@ function drawChart(cid, days, salesData){
 
 // ── NOTIFICATIONS ──────────────────────────────────
 async function addNotif(type,title,text){
-  const notifBID = BID || ME?.buyerId; if(!notifBID)return;
-  try{ await db.collection('buyers').doc(notifBID).collection('notifications').add({type,title,text,time:firebase.firestore.FieldValue.serverTimestamp(),read:false,buyerId:notifBID}); }catch(e){console.warn('notif:',e);}
+  const notifBID = BID || ME?.buyerId; if(!notifBID)return; const BID_=notifBID;
+  try{ await db.collection('buyers').doc(BID_).collection('notifications').add({type,title,text,time:firebase.firestore.FieldValue.serverTimestamp(),read:false,buyerId:BID_}); }catch(e){console.warn('notif:',e);}
 }
 function renderNotifs(){
   const el=g('notif-list');
@@ -1785,13 +1777,13 @@ function renderNotifs(){
 }
 async function markRead(id){ const b=BID||ME?.buyerId; if(!b)return; try{ await db.collection('buyers').doc(b).collection('notifications').doc(id).update({read:true}); }catch(e){} }
 async function markAllRead(){ const b=BID||ME?.buyerId; if(!b)return; const batch=db.batch(); NOTIFS.filter(n=>!n.read).forEach(n=>batch.update(db.collection('buyers').doc(b).collection('notifications').doc(n.id),{read:true})); try{await batch.commit();toast('All read','s');}catch(e){} }
-function checkLowStock(){ const cb=BID||ME?.buyerId; if(!cb)return; PRODS.filter(p=>p.quantity<=(p.lowAt||CFG.threshold)).forEach(p=>{ const exists=NOTIFS.some(n=>!n.read&&n.text?.includes(p.name)); if(!exists) addNotif('warn','Low Stock',p.name+' is low ('+p.quantity+' '+(p.unitType||'units')+').'); }); }
+function checkLowStock(){ const cb=BID||ME?.buyerId; if(!cb)return; PRODS.filter(p=>p.quantity<=(p.lowAt||CFG.threshold)).forEach(p=>{ const exists=NOTIFS.some(n=>!n.read&&n.text?.includes(p.name)); if(!exists) addNotif('warn','Low Stock',p.name+' is low ('+p.quantity+' units).'); }); }
 function updBadges(){ const u=NOTIFS.filter(n=>!n.read).length; const ts=SALES.filter(s=>new Date(s.timestamp).toDateString()===new Date().toDateString()).length; g('sb-notif').textContent=u||''; g('sb-sales').textContent=ts||''; u>0?g('tb-ndot').classList.remove('h'):g('tb-ndot').classList.add('h'); }
 
 // ── STAFF ──────────────────────────────────────────
 function renderStaff(){
   const el=g('staff-list');
-  const allStaff=[{id:'admin-built-in',name:ME.name||'Admin',email:ME.email||'admin@fujupventure.com',role:'admin',phone:'Owner account'},...STAFF];
+  const allStaff=[{id:'admin-built-in',name:ME.name||'Admin',email:ME.email||'admin@store.com',role:'admin',phone:'Owner account'},...STAFF];
   el.innerHTML=allStaff.map((s,i)=>`<div class="stc"><div class="st-av" style="background:${COLORS[i%COLORS.length]}">${s.name.charAt(0).toUpperCase()}</div><div style="flex:1"><div class="st-name">${esc(s.name)}</div><div class="st-email">${esc(s.email)}</div><div style="margin-top:4px"><span class="bdg ${s.role==='admin'?'bdg-b':s.role==='manager'?'bdg-p':s.role==='accountant'?'bdg-a':'bdg-g'}">${s.role}</span></div>${s.phone?`<div style="font-size:.73rem;color:var(--t3);margin-top:3px">${esc(s.phone)}</div>`:''}<div style="display:flex;gap:6px;margin-top:9px">${s.id!=='admin-built-in'?`<button class="btn btn-o btn-sm" onclick="openStaffModal('${s.id}')">✏️ Edit</button><button class="btn btn-r btn-sm" onclick="removeStaff('${s.id}','${esc(s.name)}')">Remove</button>`:'<span style="font-size:.72rem;color:var(--t3)">Owner account</span>'}</div></div></div>`).join('');
 }
 function openStaffModal(id){
@@ -1803,13 +1795,13 @@ function openStaffModal(id){
 }
 async function saveStaff(){
   if(!can('staff')){toast('⛔ No permission','e');return;}
-  if(!BID){toast('No branch context','e');return;}
+  if(!BID){toast('No buyer context','e');return;}
   const name=g('stm-name').value.trim(),email=g('stm-email').value.trim().toLowerCase(),pass=g('stm-pass').value,role=g('stm-role').value,phone=g('stm-phone').value.trim(),eid=g('stm-id').value;
   const effectiveBID = BID || ME?.buyerId;
   if(!name||!email)return ferr('stm-err','Name and email required.');
   if(!eid&&!pass)return ferr('stm-err','Password required for new staff.');
   if(pass&&pass.length<6)return ferr('stm-err','Password must be 6+ chars.');
-  if(!effectiveBID)return ferr('stm-err','No branch selected.');
+  if(!effectiveBID)return ferr('stm-err','No buyer selected. Enter a buyer first from the Buyers page.');
   const data={name,email,role,phone,buyerId:effectiveBID};
   if(pass) data.password=pass;
   try{
@@ -1820,126 +1812,10 @@ async function saveStaff(){
 }
 async function removeStaff(id,name){ if(!confirm('Remove '+name+'?'))return; const b=BID||ME?.buyerId; if(!b)return; try{await db.collection('buyers').doc(b).collection('staff').doc(id).delete();toast('Staff removed','s');}catch(e){toast('Failed: '+e.message,'e');} }
 
-// ── CUSTOMERS ──────────────────────────────────────
-function genCustId(){
-  return 'CID-'+Date.now().toString(36).toUpperCase().slice(-5);
-}
-
-function renderCustomers(){
-  const q=(g('custs')?.value||'').toLowerCase();
-  const list=CUSTOMERS.filter(c=>!q||(c.name||'').toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.email||'').toLowerCase().includes(q));
-  g('cust-sub').textContent=list.length+' customer'+(list.length!==1?'s':'');
-  const el=g('cust-grid');
-  if(!el)return;
-  el.innerHTML=list.length?list.map((c,i)=>`
-    <div class="cust-card">
-      <div class="cust-av" style="background:${COLORS[i%COLORS.length]}">${(c.name||'?').charAt(0).toUpperCase()}</div>
-      <div class="cust-name">${esc(c.name)}</div>
-      <div class="cust-id">${esc(c.customerId||c.id)}</div>
-      <div class="cust-detail">📞 ${esc(c.phone||'—')}</div>
-      ${c.email?`<div class="cust-detail">✉️ ${esc(c.email)}</div>`:''}
-      ${c.address?`<div class="cust-detail">📍 ${esc(c.address)}</div>`:''}
-      ${c.notes?`<div class="cust-detail" style="font-style:italic;color:var(--t4)">📝 ${esc(c.notes)}</div>`:''}
-      <div class="cust-detail" style="margin-top:6px;font-weight:700">
-        Purchases: ${c.purchaseCount||0} · Total: ${fmt(c.totalPurchases||0)}
-      </div>
-      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-        <button class="btn btn-o btn-sm" onclick="showCustHistory('${c.id}')">📋 History</button>
-        <button class="btn btn-o btn-sm" onclick="openCustModal('${c.id}')">✏️ Edit</button>
-        <button class="btn btn-r btn-sm" onclick="deleteCust('${c.id}','${esc(c.name)}')">🗑</button>
-      </div>
-    </div>
-  `).join('')
-  :'<div class="empty" style="grid-column:1/-1"><div class="empty-icon">👥</div><div class="empty-title">No customers yet</div><div class="empty-sub">Click "+ Add Customer" to start building your customer records</div></div>';
-}
-
-function updateCustDatalist(){
-  const dl=g('cust-dl-sale'); if(!dl)return;
-  dl.innerHTML=CUSTOMERS.map(c=>`<option value="${esc(c.name)}" data-id="${c.id}">`).join('');
-}
-
-function linkSaleCustomer(){
-  const name=g('sm-cust').value.trim();
-  const cust=CUSTOMERS.find(c=>c.name.toLowerCase()===name.toLowerCase());
-  if(cust){ g('sm-cust-id').value=cust.id; toast('Linked to '+cust.name,'s'); }
-  else toast('Customer not found. They will be recorded as walk-in.','w');
-}
-
-function openCustModal(id){
-  g('cm-err').classList.add('h');
-  if(id){
-    const c=CUSTOMERS.find(x=>x.id===id); if(!c)return;
-    g('cm-t').textContent='Edit Customer'; g('cm-id').value=id;
-    g('cm-name').value=c.name; g('cm-phone').value=c.phone||''; g('cm-email').value=c.email||'';
-    g('cm-addr').value=c.address||''; g('cm-notes').value=c.notes||'';
-  } else {
-    g('cm-t').textContent='Add Customer'; g('cm-id').value='';
-    ['cm-name','cm-phone','cm-email','cm-addr','cm-notes'].forEach(f=>g(f).value='');
-  }
-  openM('cust-modal');
-}
-
-async function saveCustomer(){
-  const b=BID||ME?.buyerId; if(!b){toast('No branch context','e');return;}
-  const name=g('cm-name').value.trim(), phone=g('cm-phone').value.trim();
-  if(!name) return ferr('cm-err','Full name required.');
-  if(!phone) return ferr('cm-err','Phone/WhatsApp number required.');
-  const eid=g('cm-id').value;
-  const data={
-    name, phone,
-    email:g('cm-email').value.trim(),
-    address:g('cm-addr').value.trim(),
-    notes:g('cm-notes').value.trim(),
-    buyerId:b
-  };
-  if(!eid) data.customerId=genCustId();
-  try{
-    const col=db.collection('buyers').doc(b).collection('customers');
-    if(eid){ await col.doc(eid).update(data); }
-    else{ await col.add({...data, purchaseCount:0, totalPurchases:0, createdAt:firebase.firestore.FieldValue.serverTimestamp()}); }
-    closeM('cust-modal'); toast(eid?'Customer updated!':'Customer added!','s');
-  }catch(e){ ferr('cm-err','Save failed: '+e.message); }
-}
-
-async function deleteCust(id,name){
-  if(!confirm('Delete customer "'+name+'"? Their purchase history links will remain in sales records.'))return;
-  const b=BID||ME?.buyerId; if(!b)return;
-  try{ await db.collection('buyers').doc(b).collection('customers').doc(id).delete(); toast('Customer deleted','s'); }
-  catch(e){ toast('Failed: '+e.message,'e'); }
-}
-
-async function showCustHistory(id){
-  const b=BID||ME?.buyerId; if(!b)return;
-  const cust=CUSTOMERS.find(c=>c.id===id); if(!cust)return;
-  g('ch-t').textContent='Purchase History — '+cust.name;
-  g('ch-body').innerHTML='<div style="text-align:center;padding:20px;color:var(--t3)">Loading…</div>';
-  openM('cust-hist-modal');
-  const sales=SALES.filter(s=>s.customerId===id||s.customer===cust.name);
-  if(!sales.length){
-    g('ch-body').innerHTML='<div class="empty"><div class="empty-icon">🛒</div><div class="empty-sub">No purchases recorded for this customer yet.</div></div>';
-    return;
-  }
-  const total=sales.reduce((a,s)=>a+(s.total||0),0);
-  g('ch-body').innerHTML=`
-    <div style="display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap">
-      <div style="background:var(--bg);border-radius:10px;padding:12px 18px;flex:1;min-width:120px;text-align:center">
-        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t3)">Total Spent</div>
-        <div style="font-size:1.2rem;font-weight:800;color:#059669;font-family:'JetBrains Mono',monospace">${fmt(total)}</div>
-      </div>
-      <div style="background:var(--bg);border-radius:10px;padding:12px 18px;flex:1;min-width:120px;text-align:center">
-        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t3)">Transactions</div>
-        <div style="font-size:1.2rem;font-weight:800;color:var(--navy);font-family:'JetBrains Mono',monospace">${sales.length}</div>
-      </div>
-    </div>
-    <div class="tw"><table><thead><tr><th>#</th><th>Product</th><th>Qty</th><th>Total</th><th>Date</th></tr></thead><tbody>
-    ${sales.map((s,i)=>`<tr><td style="color:var(--t4);font-size:.77rem">${sales.length-i}</td><td class="td-n">${esc(s.productName)}</td><td class="td-m">${s.quantity}</td><td class="td-m td-gr">${fmt(s.total)}</td><td style="color:var(--t4);font-size:.77rem">${fmtDT(s.timestamp)}</td></tr>`).join('')}
-    </tbody></table></div>`;
-}
-
-// ── BRANCHES (Super Admin) ─────────────────────────
+// ── BRANCHES (Super Admin) ────────────────────────
 async function renderBuyers(){
   g('sa-b').textContent=BUYERS.length;
-  g('buyers-sub').textContent=BUYERS.length+' registered branch'+(BUYERS.length!==1?'es':'');
+  g('buyers-sub').textContent=BUYERS.length+' branch'+(BUYERS.length!==1?'es':'');
   let totalP=0,totalS=0,totalR=0;
   const statsProms=BUYERS.map(async b=>{
     const [ps,ss]=await Promise.all([db.collection('buyers').doc(b.id).collection('products').get(),db.collection('buyers').doc(b.id).collection('sales').get()]);
@@ -1948,13 +1824,14 @@ async function renderBuyers(){
     return{id:b.id,prods:ps.size,sales:ss.size,rev};
   });
   const stats=await Promise.all(statsProms);
-  g('sa-p').textContent=totalP; g('sa-s').textContent=totalS; g('sa-r').textContent=fmt(totalR);
-  g('buyers-sub').textContent=BUYERS.length+' registered branch'+(BUYERS.length!==1?'es':'');
+  g('sa-p').textContent=totalP; g('sa-s').textContent=totalS; g('sa-r').textContent=(CFG.currency||'₦')+totalR.toFixed(2);
+  g('buyers-sub').textContent=BUYERS.length+' branch'+(BUYERS.length!==1?'es':'')+' · Fujup Venture';
   const el=g('buyers-grid');
+  const wb=g('sa-welcome'); if(wb) wb.classList.toggle('h', BUYERS.length>0);
   el.innerHTML=BUYERS.length?BUYERS.map((b,i)=>{
     const st=stats.find(x=>x.id===b.id)||{prods:0,sales:0,rev:0};
     const col=COLORS[i%COLORS.length];
-    const ico=ICONS[b.type]||'📦';
+    const ico=ICONS[b.type]||'🏢';
     return `<div class="buyer-card">
       <div style="height:4px;background:${col}"></div>
       <div class="bc-top">
@@ -1962,15 +1839,15 @@ async function renderBuyers(){
           <div style="width:40px;height:40px;border-radius:10px;background:${col};display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">${ico}</div>
           <div style="flex:1">
             <div class="bc-name">${esc(b.name)}</div>
-            <div class="bc-meta">${esc(b.adminEmail)}</div>
-            <div class="bc-meta">${esc(b.address||'No address')}</div>
+            <div class="bc-meta" style="color:#2563EB;font-weight:600">Branch ${i+1}</div>
+            <div class="bc-meta">${esc(b.address||'No address set')}</div>
           </div>
         </div>
       </div>
       <div class="bc-stats">
         <div class="bc-stat"><div class="bc-sv">${st.prods}</div><div class="bc-sl">Products</div></div>
         <div class="bc-stat"><div class="bc-sv">${st.sales}</div><div class="bc-sl">Sales</div></div>
-        <div class="bc-stat"><div class="bc-sv" style="font-size:.85rem">${fmt(st.rev)}</div><div class="bc-sl">Revenue</div></div>
+        <div class="bc-stat"><div class="bc-sv" style="font-size:.85rem">${(b.currency||'₦')+st.rev.toFixed(0)}</div><div class="bc-sl">Revenue</div></div>
       </div>
       <div class="bc-btns">
         <button class="btn btn-b btn-sm" style="flex:2" onclick="enterBuyer('${b.id}')">🏢 Enter & Manage</button>
@@ -1980,19 +1857,11 @@ async function renderBuyers(){
       <div style="padding:0 12px 12px;font-size:.73rem;color:var(--t3)">Admin: <span>${esc(b.adminEmail)}</span></div>
     </div>`;
   }).join('')
-  :'<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🏢</div><div class="empty-title">No branches yet</div><div class="empty-sub">Create your first branch to get started. Fujup Venture supports multiple branches.</div></div>';
+  :'<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🏢</div><div class="empty-title">No branches yet</div><div class="empty-sub">Add your first branch to get started. Fujup Venture supports multiple branches.</div></div>';
 }
 
 async function enterBuyer(bid){
-  let buyer=BUYERS.find(b=>b.id===bid);
-  // If not in local array yet (e.g. just created), fetch from Firestore directly
-  if(!buyer){
-    try{
-      const doc = await db.collection('buyers').doc(bid).get();
-      if(doc.exists) buyer = {id:doc.id,...doc.data()};
-    }catch(e){ toast('Could not load branch: '+e.message,'e'); return; }
-  }
-  if(!buyer){ toast('Branch not found','e'); return; }
+  const buyer=BUYERS.find(b=>b.id===bid); if(!buyer)return;
   BID=bid;
   ME={id:'sa-in-buyer',name:'Super Admin',role:'admin',buyerId:bid};
   CFG={bizName:buyer.name,currency:buyer.currency||'₦',threshold:buyer.threshold||10,address:buyer.address||''};
@@ -2012,16 +1881,14 @@ async function enterBuyer(bid){
 function openBuyerModal(id){
   g('bm-err').classList.add('h');
   if(id){const b=BUYERS.find(x=>x.id===id);if(!b)return;g('bm-t').textContent='Edit Branch';g('bm-id').value=id;g('bm-name').value=b.name;g('bm-email').value=b.adminEmail;g('bm-pass').value='';g('bm-pin').value=b.pin||'';g('bm-cur').value=b.currency||'₦';g('bm-type').value=b.type||'shop';g('bm-addr').value=b.address||'';}
-  else{g('bm-t').textContent='Create Branch';g('bm-id').value='';['bm-name','bm-email','bm-pass','bm-pin','bm-addr'].forEach(f=>g(f).value='');g('bm-cur').value='₦';g('bm-type').value='shop';}
+  else{g('bm-t').textContent='Add Branch';g('bm-id').value='';['bm-name','bm-email','bm-pass','bm-pin','bm-addr'].forEach(f=>g(f).value='');g('bm-cur').value='₦';g('bm-type').value='shop';}
   openM('buyer-modal');
 }
 async function saveBuyer(){
   const name=g('bm-name').value.trim(),email=g('bm-email').value.trim(),pass=g('bm-pass').value,pin=g('bm-pin').value.trim(),cur=g('bm-cur').value.trim()||'₦',type=g('bm-type').value,addr=g('bm-addr').value.trim(),eid=g('bm-id').value;
-  if(!name||!email)return ferr('bm-err','Name and email required.');
+  if(!name||!email)return ferr('bm-err','Branch name and email required.');
   if(!eid&&!pass)return ferr('bm-err','Admin password required.');
   if(pass&&pass.length<6)return ferr('bm-err','Password must be 6+ chars.');
-  // PIN is required for new branches so branch PIN login works
-  if(!eid&&!pin)return ferr('bm-err','Branch PIN is required (4 digits).');
   if(pin&&!/^\d{4}$/.test(pin))return ferr('bm-err','PIN must be 4 digits.');
   if(pin){const dup=await db.collection('buyers').where('pin','==',pin).get();if(!dup.empty&&(eid?dup.docs[0].id!==eid:true))return ferr('bm-err','PIN already used by another branch.');}
   const data={name,adminEmail:email,adminName:'Admin',pin:pin||'',currency:cur,type,address:addr,threshold:10};
@@ -2045,19 +1912,151 @@ async function deleteBuyer(id,name){
   try{await db.collection('buyers').doc(id).delete();toast('Branch deleted','s');}catch(e){toast('Failed: '+e.message,'e');}
 }
 
+// ── CUSTOMERS ─────────────────────────────────────
+function renderCustomers(){
+  const q=(g('cs')?.value||'').toLowerCase();
+  const list=CUSTOMERS.filter(c=>!q||c.name?.toLowerCase().includes(q)||c.phone?.includes(q)||c.email?.toLowerCase().includes(q));
+  if(g('cust-sub')) g('cust-sub').textContent=list.length+' customer'+(list.length!==1?'s':'');
+  const el=g('cust-grid'); if(!el) return;
+  if(!list.length){
+    el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">👥</div><div class="empty-title">No customers yet</div><div class="empty-sub">Click "+ Add Customer" to build your customer records</div></div>';
+    return;
+  }
+  const bgColors=['#2563EB','#7C3AED','#059669','#DC2626','#D97706','#0891B2','#EC4899'];
+  el.innerHTML=list.map((c,i)=>{
+    const purchases=SALES.filter(s=>s.customerId===c.id||s.customer===c.name);
+    const totalSpent=c.totalSpent||purchases.reduce((a,s)=>a+(s.total||0),0);
+    const lp=c.lastPurchase?(c.lastPurchase.toDate?tAgo(c.lastPurchase.toDate()):tAgo(c.lastPurchase)):(purchases.length?tAgo(purchases[0].timestamp):'Never');
+    const bg=bgColors[i%bgColors.length];
+    return '<div class="cust-card">'+
+      '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:11px">'+
+        '<div class="cust-av" style="background:'+bg+'">'+c.name.charAt(0).toUpperCase()+'</div>'+
+        '<div style="flex:1;min-width:0">'+
+          '<div class="cust-name">'+esc(c.name)+'</div>'+
+          '<div class="cust-meta">📞 '+esc(c.phone)+'</div>'+
+          (c.email?'<div class="cust-meta">✉️ '+esc(c.email)+'</div>':'')+
+          (c.address?'<div class="cust-meta">📍 '+esc(c.address)+'</div>':'')+
+        '</div></div>'+
+      '<div style="display:flex;gap:8px;margin-bottom:11px">'+
+        '<div style="flex:1;background:var(--bg);border-radius:8px;padding:8px;text-align:center"><div style="font-size:.68rem;color:var(--t3);font-weight:700;text-transform:uppercase">Purchases</div><div style="font-size:1.1rem;font-weight:800;color:var(--navy)">'+(c.purchaseCount||purchases.length)+'</div></div>'+
+        '<div style="flex:1;background:var(--bg);border-radius:8px;padding:8px;text-align:center"><div style="font-size:.68rem;color:var(--t3);font-weight:700;text-transform:uppercase">Total Spent</div><div style="font-size:1rem;font-weight:800;color:#059669;font-family:\'JetBrains Mono\',monospace">'+fmt(totalSpent)+'</div></div>'+
+        '<div style="flex:1;background:var(--bg);border-radius:8px;padding:8px;text-align:center"><div style="font-size:.68rem;color:var(--t3);font-weight:700;text-transform:uppercase">Last Visit</div><div style="font-size:.78rem;font-weight:700;color:var(--navy)">'+lp+'</div></div>'+
+      '</div>'+
+      (c.notes?'<div style="font-size:.76rem;color:var(--t3);background:var(--bg);padding:7px 10px;border-radius:7px;margin-bottom:10px;border-left:3px solid '+bg+'">💬 '+esc(c.notes)+'</div>':'')+
+      '<div style="display:flex;gap:6px">'+
+        '<button class="btn btn-o btn-sm" style="flex:1" onclick="viewCustHistory(\''+c.id+'\')">📋 History</button>'+
+        '<button class="btn btn-o btn-sm" onclick="openCustModal(\''+c.id+'\')">✏️</button>'+
+        '<button class="btn btn-r btn-sm" onclick="deleteCust(\''+c.id+'\',\''+esc(c.name)+'\')">🗑</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+function openCustModal(id){
+  g('cm-err').classList.add('h');
+  if(id){
+    const c=CUSTOMERS.find(x=>x.id===id); if(!c) return;
+    g('cm-t').textContent='Edit Customer'; g('cm-id').value=id;
+    g('cm-name').value=c.name||''; g('cm-phone').value=c.phone||'';
+    g('cm-email').value=c.email||''; g('cm-addr').value=c.address||''; g('cm-notes').value=c.notes||'';
+  } else {
+    g('cm-t').textContent='Add Customer'; g('cm-id').value='';
+    ['cm-name','cm-phone','cm-email','cm-addr','cm-notes'].forEach(f=>{const el=g(f);if(el)el.value='';});
+  }
+  openM('cust-modal');
+}
+
+async function saveCust(){
+  const eid=g('cm-id').value, name=g('cm-name').value.trim(), phone=g('cm-phone').value.trim();
+  const email=g('cm-email').value.trim(), addr=g('cm-addr').value.trim(), notes=g('cm-notes').value.trim();
+  const activeBID=BID||ME?.buyerId;
+  if(!name) return ferr('cm-err','Full name is required.');
+  if(!phone) return ferr('cm-err','Phone / WhatsApp number is required.');
+  if(!activeBID) return ferr('cm-err','No branch context.');
+  const data={name,phone,email,address:addr,notes,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+  if(!eid){ data.createdAt=firebase.firestore.FieldValue.serverTimestamp(); data.totalSpent=0; data.purchaseCount=0; }
+  try{
+    const col=db.collection('buyers').doc(activeBID).collection('customers');
+    if(eid){await col.doc(eid).update(data); toast('Customer updated!','s');}
+    else{await col.add(data); toast('Customer added!','s');}
+    closeM('cust-modal');
+  }catch(e){ferr('cm-err','Failed: '+e.message);}
+}
+
+async function deleteCust(id,name){
+  if(!confirm('Delete customer "'+name+'"? Their sales history will remain.')) return;
+  const b=BID||ME?.buyerId; if(!b) return;
+  try{await db.collection('buyers').doc(b).collection('customers').doc(id).delete(); toast('Customer deleted','s');}
+  catch(e){toast('Failed: '+e.message,'e');}
+}
+
+function viewCustHistory(id){
+  const c=CUSTOMERS.find(x=>x.id===id); if(!c) return;
+  const purchases=SALES.filter(s=>s.customerId===id||s.customer===c.name).slice(0,50);
+  const totalSpent=c.totalSpent||purchases.reduce((a,s)=>a+(s.total||0),0);
+  g('ch-title').textContent=c.name+' — Purchase History';
+  g('ch-info').innerHTML=
+    '<div style="flex:1">'+
+      '<div style="font-size:.95rem;font-weight:800;color:var(--navy);margin-bottom:4px">'+esc(c.name)+'</div>'+
+      '<div style="font-size:.8rem;color:var(--t3)">📞 '+esc(c.phone)+'</div>'+
+      (c.email?'<div style="font-size:.8rem;color:var(--t3)">✉️ '+esc(c.email)+'</div>':'')+
+      (c.address?'<div style="font-size:.8rem;color:var(--t3)">📍 '+esc(c.address)+'</div>':'')+
+      (c.notes?'<div style="font-size:.78rem;color:var(--t3);margin-top:5px;font-style:italic">💬 '+esc(c.notes)+'</div>':'')+
+    '</div>'+
+    '<div style="text-align:right">'+
+      '<div style="font-size:.7rem;color:var(--t3);text-transform:uppercase;font-weight:700">Total Spent</div>'+
+      '<div style="font-size:1.3rem;font-weight:800;color:#059669;font-family:\'JetBrains Mono\',monospace">'+fmt(totalSpent)+'</div>'+
+      '<div style="font-size:.75rem;color:var(--t3)">'+(c.purchaseCount||purchases.length)+' orders</div>'+
+    '</div>';
+  const seen=new Set();
+  const grouped=purchases.filter(s=>{if(s.receiptId&&seen.has(s.receiptId))return false;if(s.receiptId)seen.add(s.receiptId);return true;});
+  g('ch-history').innerHTML=grouped.length
+    ?'<div class="tw"><table><thead><tr><th>Product</th><th>Qty</th><th>Total</th><th>Cashier</th><th>Date</th></tr></thead><tbody>'+
+      grouped.map(s=>'<tr><td class="td-n">'+esc(s.productName)+'</td><td class="td-m">'+s.quantity+'</td><td class="td-m td-gr">'+fmt(s.total)+'</td><td style="font-size:.8rem">'+esc(s.cashier||'—')+'</td><td style="color:var(--t4);font-size:.77rem">'+fmtDT(s.timestamp)+'</td></tr>').join('')+
+      '</tbody></table></div>'
+    :'<div style="text-align:center;padding:20px;color:var(--t3);font-size:.85rem">No purchase history yet for this customer.</div>';
+  openM('cust-hist-modal');
+}
+
+// Customer autocomplete in sale modal
+function custAutocomplete(){
+  const val=(g('sm-cust')?.value||'').toLowerCase().trim();
+  const box=g('cust-suggestions'); if(!box) return;
+  if(!val||val.length<2){box.style.display='none'; return;}
+  const matches=CUSTOMERS.filter(c=>c.name?.toLowerCase().includes(val)||c.phone?.includes(val)).slice(0,6);
+  if(!matches.length){box.style.display='none'; return;}
+  box.style.display='block';
+  box.innerHTML=matches.map(c=>
+    '<div onclick="selectCust(\''+c.id+'\')" style="padding:9px 13px;cursor:pointer;border-bottom:1px solid var(--bord)" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'\'">'+
+    '<div style="font-size:.86rem;font-weight:700;color:var(--navy)">'+esc(c.name)+'</div>'+
+    '<div style="font-size:.74rem;color:var(--t3)">'+esc(c.phone)+(c.email?' · '+esc(c.email):'')+
+    (c.totalSpent?' · '+fmt(c.totalSpent)+' spent':'')+
+    '</div></div>').join('');
+}
+
+function selectCust(id){
+  const c=CUSTOMERS.find(x=>x.id===id); if(!c) return;
+  g('sm-cust').value=c.name;
+  hideCustSuggestions();
+}
+
+function hideCustSuggestions(){
+  const box=g('cust-suggestions'); if(box) box.style.display='none';
+}
+
+document.addEventListener('click',e=>{if(!e.target.closest('#sm-cust')&&!e.target.closest('#cust-suggestions'))hideCustSuggestions();});
+
 // ── SETTINGS ──────────────────────────────────────
 async function saveSettings(){
-  CFG.bizName=g('set-biz').value.trim()||'Fujup Venture';
-  CFG.currency=g('set-cur').value.trim()||'₦';
+  CFG.bizName=g('set-biz').value.trim()||'My Store';
+  CFG.currency=g('set-cur').value.trim()||'$';
   CFG.threshold=parseInt(g('set-thr').value)||10;
   CFG.address=g('set-addr').value.trim();
-  const sb=BID||ME?.buyerId;
-  if(sb){try{await db.collection('buyers').doc(sb).update({name:CFG.bizName,currency:CFG.currency,threshold:CFG.threshold,address:CFG.address}); toast('Settings saved!','s');}catch(e){toast('Save failed: '+e.message,'e');}}
+  const sb=BID||ME?.buyerId; if(sb){try{await db.collection('buyers').doc(sb).update({name:CFG.bizName,currency:CFG.currency,threshold:CFG.threshold,address:CFG.address}); toast('Settings saved!','s');}catch(e){toast('Save failed: '+e.message,'e');}}
   else toast('Settings saved locally','s');
 }
 
 async function changePIN(){
-  if(!BID){toast('Enter a branch context first','e');return;}
+  if(!BID){toast('Enter a buyer context first','e');return;}
   const old=g('s-old').value,nw=g('s-new').value,cf=g('s-cf').value;
   const buyer=BUYERS.find(b=>b.id===BID)||await db.collection('buyers').doc(BID).get().then(d=>d.data());
   if(!buyer)return;
@@ -2065,7 +2064,7 @@ async function changePIN(){
   if(!/^\d{4}$/.test(nw))return toast('PIN must be 4 digits','e');
   if(nw!==cf)return toast('PINs do not match','e');
   const dup=await db.collection('buyers').where('pin','==',nw).get();
-  if(!dup.empty&&dup.docs[0].id!==BID)return toast('PIN already used by another branch','e');
+  if(!dup.empty&&dup.docs[0].id!==BID)return toast('PIN already used by another buyer','e');
   try{await db.collection('buyers').doc(BID).update({pin:nw});g('s-old').value='';g('s-new').value='';g('s-cf').value='';toast('PIN updated!','s');}catch(e){toast('Failed: '+e.message,'e');}
 }
 
@@ -2081,37 +2080,38 @@ function updateProfile(){ const name=g('set-name').value.trim(); if(!name)return
 
 // ── DEMO DATA ──────────────────────────────────────
 async function loadDemo(){
-  if(!BID){toast('Enter a branch context first to load demo data','e');return;}
-  if(!confirm('Add demo products & sales to this branch?'))return;
+  if(!BID){toast('Enter a buyer context first to load demo data','e');return;}
+  if(!confirm('Add demo products & sales to this buyer?'))return;
   const col=db.collection('buyers').doc(BID);
   const DP=[
-    {name:'Soft Drink Crate (24 bottles)',category:'Beverages',price:4800,costPrice:3600,quantity:10,sku:'BEV-001',supplier:'NBC',lowAt:3,unitType:'crate',unitsPerPack:24},
-    {name:'Peak Milk Carton',category:'Dairy',price:6200,costPrice:5000,quantity:5,sku:'DAI-001',supplier:'FrieslandCampina',lowAt:2,unitType:'carton',unitsPerPack:12},
-    {name:'Indomie Noodles (Carton)',category:'Food',price:5400,costPrice:4500,quantity:8,sku:'FOD-001',supplier:'Dufil',lowAt:3,unitType:'carton',unitsPerPack:40},
-    {name:'Paracetamol Blister',category:'Medicine',price:50,costPrice:30,quantity:200,sku:'MED-001',supplier:'PharmaCo',lowAt:30,unitType:'unit',unitsPerPack:1},
-    {name:'Semovita (Pack of 6)',category:'Food',price:4200,costPrice:3500,quantity:12,sku:'FOD-002',supplier:'Honeywell',lowAt:4,unitType:'pack',unitsPerPack:6},
-    {name:'Groundnut Oil (5L)',category:'Groceries',price:8500,costPrice:7000,quantity:15,sku:'GRO-001',supplier:'Devon Kings',lowAt:5,unitType:'unit',unitsPerPack:1},
-    {name:'Tomato Paste (Carton)',category:'Groceries',price:7200,costPrice:6000,quantity:6,sku:'GRO-002',supplier:'De Rica',lowAt:2,unitType:'carton',unitsPerPack:24},
-    {name:'Sugar (50kg Bag)',category:'Groceries',price:55000,costPrice:48000,quantity:4,sku:'GRO-003',supplier:'Dangote',lowAt:2,unitType:'bag',unitsPerPack:1},
-    {name:'Rice (50kg Bag)',category:'Food',price:60000,costPrice:52000,quantity:3,sku:'FOD-003',supplier:'Olam',lowAt:2,unitType:'bag',unitsPerPack:1},
-    {name:'Malt Drink (Crate)',category:'Beverages',price:3600,costPrice:2800,quantity:7,sku:'BEV-002',supplier:'Maltina',lowAt:3,unitType:'crate',unitsPerPack:24},
+    {name:'Paracetamol 500mg',category:'Medicine',price:2.50,costPrice:1.20,quantity:45,sku:'MED-001',supplier:'PharmaCo',lowAt:10},
+    {name:'Ibuprofen 400mg',category:'Medicine',price:3.20,costPrice:1.80,quantity:8,sku:'MED-002',supplier:'PharmaCo',lowAt:10},
+    {name:'Vitamin C 1000mg',category:'Medicine',price:8.99,costPrice:4.50,quantity:120,sku:'SUP-001',supplier:'NutraPlus',lowAt:15},
+    {name:'Hand Sanitizer 200ml',category:'Hygiene',price:4.50,costPrice:2.00,quantity:3,sku:'HYG-001',supplier:'CleanLife',lowAt:10},
+    {name:'Face Masks 50pk',category:'Hygiene',price:12.00,costPrice:6.50,quantity:60,sku:'HYG-002',supplier:'SafeGuard',lowAt:10},
+    {name:'Whole Milk 1L',category:'Dairy',price:1.20,costPrice:.70,quantity:80,sku:'DAI-001',supplier:'FarmFresh',lowAt:20},
+    {name:'Brown Bread Loaf',category:'Bakery',price:2.10,costPrice:1.10,quantity:20,sku:'BAK-001',supplier:'BakeryCo',lowAt:10},
+    {name:'Coca-Cola 2L',category:'Beverages',price:2.20,costPrice:1.20,quantity:100,sku:'BEV-001',supplier:'DrinksCo',lowAt:15},
+    {name:'Aspirin 300mg',category:'Medicine',price:1.80,costPrice:.90,quantity:5,sku:'MED-004',supplier:'PharmaCo',lowAt:10},
+    {name:'Toothpaste 100ml',category:'Hygiene',price:2.00,costPrice:1.00,quantity:65,sku:'HYG-003',supplier:'CleanLife',lowAt:15},
   ];
   const batch=db.batch();
   DP.forEach(p=>batch.set(col.collection('products').doc(),{...p,buyerId:BID,dateAdded:firebase.firestore.FieldValue.serverTimestamp()}));
   await batch.commit();
+  // Add sales
   const batch2=db.batch();
   for(let i=0;i<20;i++){
-    const p=DP[i%DP.length];const q=Math.floor(1+Math.random()*3);
+    const p=DP[i%DP.length];const q=Math.floor(1+Math.random()*4);
     const ts=new Date();ts.setDate(ts.getDate()-Math.floor(Math.random()*7));ts.setHours(8+Math.floor(Math.random()*10));
-    batch2.set(col.collection('sales').doc(),{productName:p.name,category:p.category,quantity:q,unitPrice:p.price,discountAmt:0,total:q*p.price,cashier:'Demo Staff',customer:'',timestamp:ts,buyerId:BID,receiptId:'DEMO-'+i});
+    batch2.set(col.collection('sales').doc(),{productName:p.name,category:p.category,quantity:q,unitPrice:p.price,total:q*p.price,cashier:'Admin',customer:'',timestamp:ts,buyerId:BID});
   }
   await batch2.commit();
   toast('Demo data loaded! '+DP.length+' products & 20 sales.','s');
 }
 
 // ── EXPORT ─────────────────────────────────────────
-function exportProdsCSV(){ const rows=[['Name','Category','SKU','Price','Cost','Qty','Unit','Units/Pack','Supplier']]; PRODS.forEach(p=>rows.push([p.name,p.category,p.sku||'',p.price,p.costPrice||0,p.quantity,p.unitType||'unit',p.unitsPerPack||1,p.supplier||''])); dlCSV(rows,'fujup-products.csv'); toast('Exported!','s'); }
-function exportSalesCSV(){ const rows=[['Product','Qty','Unit Price','Discount','Total','Cashier','Customer','Date']]; SALES.forEach(s=>rows.push([s.productName,s.quantity,s.unitPrice,s.discountAmt||0,s.total,s.cashier||'',s.customer||'',fmtDT(s.timestamp)])); dlCSV(rows,'fujup-sales.csv'); toast('Exported!','s'); }
+function exportProdsCSV(){ const rows=[['Name','Category','SKU','Price','Cost','Qty','Supplier']]; PRODS.forEach(p=>rows.push([p.name,p.category,p.sku||'',p.price,p.costPrice||0,p.quantity,p.supplier||''])); dlCSV(rows,'products.csv'); toast('Exported!','s'); }
+function exportSalesCSV(){ const rows=[['Product','Qty','Unit Price','Total','Cashier','Customer','Date']]; SALES.forEach(s=>rows.push([s.productName,s.quantity,s.unitPrice,s.total,s.cashier||'',s.customer||'',fmtDT(s.timestamp)])); dlCSV(rows,'sales.csv'); toast('Exported!','s'); }
 function dlCSV(rows,fn){ const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'); const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download=fn; a.click(); }
 
 // ── RESPONSIVE ─────────────────────────────────────
@@ -2128,12 +2128,12 @@ document.addEventListener('keydown',e=>{
   const pinVis=!g('lock-screen').classList.contains('h')&&!g('f-pin').classList.contains('h');
   if(saVis){if(e.key>='0'&&e.key<='9')sPk(e.key);if(e.key==='Backspace')sPdel();}
   if(pinVis){if(e.key>='0'&&e.key<='9')pk(e.key);if(e.key==='Backspace')pdel();}
-  if(e.key==='Escape'){['prod-modal','sale-modal','del-modal','stock-modal','staff-modal','buyer-modal','rcpt-modal','cust-modal','cust-hist-modal'].forEach(closeM);closeSB();}
+  if(e.key==='Escape'){['prod-modal','sale-modal','del-modal','stock-modal','staff-modal','buyer-modal','rcpt-modal','cust-modal','cust-hist-modal'].forEach(closeM);closeSB();hideCustSuggestions();}
   const appVis=!g('app').classList.contains('h');
   if(appVis&&e.key==='Enter'&&document.activeElement?.id==='l-pass')doLogin();
 });
 
-console.log('%c Fujup Venture Inventory — Multi-Branch ✓','background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;padding:5px 12px;border-radius:5px;font-weight:700');
+console.log('%c Fujup Venture — Firebase Inventory System ✓','background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;padding:5px 12px;border-radius:5px;font-weight:700');
 </script>
 </body>
 </html>
