@@ -586,7 +586,15 @@ tbody tr:hover{background:var(--bg)}
 
     <!-- BRANCHES (SA only) -->
     <div class="pg" id="pg-buyers">
-      <div class="pg-head"><div><h2>Branches</h2><div class="pg-sub" id="buyers-sub"></div></div><button class="btn btn-b btn-sm" onclick="openBuyerModal()">+ Add Branch</button></div>
+      <div class="pg-head"><div><h2>Branches</h2><div class="pg-sub" id="buyers-sub"></div></div><button class="btn btn-b btn-sm" onclick="openBranchModal()">+ Add Branch</button></div>
+      <!-- Firestore rules reminder for SA -->
+      <div id="rules-warn" style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:.82rem;color:#92400E;display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:1.1rem">⚠️</span>
+        <div>
+          <strong>If branches are not saving:</strong> Go to <a href="https://console.firebase.google.com/project/fujup-venture/firestore/rules" target="_blank" style="color:#2563EB;font-weight:700">Firebase Console → Firestore → Rules</a> and set rules to <code style="background:#FEF3C7;padding:1px 4px;border-radius:4px">allow read, write: if true;</code> for all documents. This is required for the system to save data.
+          <button onclick="g('rules-warn').style.display='none'" style="margin-left:10px;font-size:.75rem;color:#6B7280;cursor:pointer;background:none;border:none;text-decoration:underline">Dismiss</button>
+        </div>
+      </div>
       <div id="buyers-overview" class="sg" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px">
         <div class="sc"><div class="sc-icon" style="background:#EDE9FE">🏢</div><div><div class="label">Total Branches</div><div class="value" id="sa-b">0</div></div></div>
         <div class="sc"><div class="sc-icon" style="background:#EFF6FF">📦</div><div><div class="label">All Products</div><div class="value" id="sa-p">0</div></div></div>
@@ -808,7 +816,7 @@ tbody tr:hover{background:var(--bg)}
 
 <!-- Branch (SA) -->
 <div id="buyer-modal" class="mo h"><div class="mb">
-  <div class="mh"><h3 id="bm-t">Create Branch</h3><button class="mx" onclick="closeM('buyer-modal')">✕</button></div>
+  <div class="mh"><h3 id="bm-t">Create Branch</h3><button class="mx" onclick="closeM('branch-modal')">✕</button></div>
   <div class="mbd">
     <div id="bm-err" class="ferr h"></div>
     <input type="hidden" id="bm-id"/>
@@ -816,7 +824,7 @@ tbody tr:hover{background:var(--bg)}
       <div class="fu fg2"><label class="fl">Branch Name *</label><input class="fc" id="bm-name" placeholder="Fujup Venture — Main Branch"/></div>
       <div class="fg2"><label class="fl">Admin Email *</label><input class="fc" type="email" id="bm-email" placeholder="admin@fujupventure.com"/></div>
       <div class="fg2"><label class="fl">Admin Password *</label><input class="fc" type="password" id="bm-pass" placeholder="Min 6 chars"/></div>
-      <div class="fg2"><label class="fl">Branch PIN (4 digits) *</label><input class="fc" type="text" inputmode="numeric" id="bm-pin" maxlength="4" placeholder="e.g. 1234" autocomplete="off"/></div>
+      <div class="fg2"><label class="fl">Branch PIN (4 digits)</label><input class="fc" type="password" id="bm-pin" maxlength="4" placeholder="e.g. 1234"/></div>
       <div class="fg2"><label class="fl">Currency</label><input class="fc" id="bm-cur" value="₦" maxlength="3"/></div>
       <div class="fg2"><label class="fl">Type</label>
         <select class="fc" id="bm-type">
@@ -831,7 +839,7 @@ tbody tr:hover{background:var(--bg)}
       <div class="fu fg2"><label class="fl">Address</label><input class="fc" id="bm-addr" placeholder="Branch Address"/></div>
     </div>
   </div>
-  <div class="mf"><button class="btn btn-o" onclick="closeM('buyer-modal')">Cancel</button><button class="btn btn-b" onclick="saveBuyer()">Save Branch</button></div>
+  <div class="mf"><button class="btn btn-o" onclick="closeM('branch-modal')">Cancel</button><button class="btn btn-b" onclick="saveBranch()">Save Branch</button></div>
 </div></div>
 
 <!-- Customer Modal -->
@@ -947,15 +955,13 @@ applyDark();
 
 // ── INIT ──────────────────────────────────────────
 async function initApp(){
-  try {
-    // Sign in anonymously so Firestore security rules allow reads/writes
-    await auth.signInAnonymously();
-  } catch(e){ console.warn('Anonymous auth:', e.message); }
+  // Simple init — no blocking tests. Just load SA PIN and show login.
   try {
     const doc = await db.collection('system').doc('config').get();
     if(doc.exists && doc.data().sa_pin) SA_PIN = doc.data().sa_pin;
-  } catch(e){ console.warn('SA pin load:', e.message); }
+  } catch(e){ console.warn('config load:', e.message); }
   g('loading').classList.add('h');
+  g('loading').style.display = 'none';
   show('lock-screen');
 }
 initApp();
@@ -983,20 +989,14 @@ function pdel(){ pBuf=pBuf.slice(0,-1); pDots(); g('pin-err').classList.add('h')
 function pDots(){ for(let i=0;i<4;i++){const e=g('d'+i);if(!e)return;e.className='pd'+(i<pBuf.length?' on':'');} }
 async function pCheck(){
   try{
-    // Re-fetch SA_PIN from Firestore in case it was updated
-    try{
-      const cfgDoc = await db.collection('system').doc('config').get();
-      if(cfgDoc.exists && cfgDoc.data().sa_pin) SA_PIN = cfgDoc.data().sa_pin;
-    }catch(e){ console.warn('SA pin refresh:', e.message); }
-
-    const snap = await db.collection('buyers').where('pin','==',pBuf).get();
-    if(!snap.empty){
-      const bdoc = snap.docs[0];
-      const buyer = {id:bdoc.id,...bdoc.data()};
-      BID = buyer.id;
-      ME  = {id:'buyer-admin-'+BID, name:buyer.adminName||buyer.name||'Admin', role:'admin', buyerId:BID};
-      CFG = {bizName:buyer.name, currency:buyer.currency||'₦', threshold:buyer.threshold||10, address:buyer.address||''};
-      show('app'); setupApp(); toast('Welcome to '+buyer.name+' 👋','s');
+    // Scan all branches client-side — avoids Firestore index requirement
+    const snap = await db.collection('branches').get();
+    const matched = snap.docs.map(d=>({id:d.id,...d.data()})).find(b=>String(b.pin||'')=== pBuf);
+    if(matched){
+      BID = matched.id;
+      ME  = {id:'buyer-admin-'+BID, name:matched.adminName||'Admin', role:'admin', buyerId:BID};
+      CFG = {bizName:matched.name, currency:matched.currency||'₦', threshold:matched.threshold||10, address:matched.address||''};
+      show('app'); setupApp(); toast('Welcome to '+matched.name+' 👋','s');
     } else {
       for(let i=0;i<4;i++){const e=g('d'+i);if(e){e.className='pd err';}}
       g('pin-err').classList.remove('h');
@@ -1013,14 +1013,14 @@ async function doLogin(){
   g('login-btn').innerHTML='<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></div>';
   g('login-btn').disabled=true;
   try {
-    const snap = await db.collection('buyers').get();
+    const snap = await db.collection('branches').get();
     let foundBuyer=null, foundStaff=null;
     for(const bdoc of snap.docs){
       const buyer={id:bdoc.id,...bdoc.data()};
       if(buyer.adminEmail&&buyer.adminEmail.toLowerCase()===email&&buyer.adminPassword===pass){
         foundBuyer=buyer; break;
       }
-      const staffSnap=await db.collection('buyers').doc(bdoc.id).collection('staff').where('email','==',email).get();
+      const staffSnap=await db.collection('branches').doc(bdoc.id).collection('staff').where('email','==',email).get();
       if(!staffSnap.empty){
         const sd=staffSnap.docs[0];
         if(sd.data().password===pass){ foundBuyer=buyer; foundStaff={id:sd.id,...sd.data()}; break; }
@@ -1104,7 +1104,7 @@ function applyRoleNav(){
 function subscribeData(){
   UNSUBS.forEach(fn=>fn&&fn()); UNSUBS=[];
   if(SA_MODE && !BID){
-    const u1 = db.collection('buyers').onSnapshot(snap=>{
+    const u1 = db.collection('branches').onSnapshot(snap=>{
       BUYERS = snap.docs.map(d=>({id:d.id,...d.data()}));
       updateBranchSelector();
       if(document.getElementById('pg-buyers')?.classList.contains('on')) renderBuyers();
@@ -1112,7 +1112,7 @@ function subscribeData(){
     });
     UNSUBS=[u1];
   } else if(BID){
-    const base = db.collection('buyers').doc(BID);
+    const base = db.collection('branches').doc(BID);
     const u1 = base.collection('products').orderBy('dateAdded','desc').onSnapshot(snap=>{
       PRODS = snap.docs.map(d=>({id:d.id,...d.data()}));
       if(g('pg-products')?.classList.contains('on')) renderProds();
@@ -1142,7 +1142,7 @@ function subscribeData(){
     }, err=>console.warn('customers:',err));
     UNSUBS=[u1,u2,u3,u4,u5];
     // Also keep buyers list updated for branch selector
-    const u6 = db.collection('buyers').onSnapshot(snap=>{
+    const u6 = db.collection('branches').onSnapshot(snap=>{
       BUYERS = snap.docs.map(d=>({id:d.id,...d.data()}));
       updateBranchSelector();
     });
@@ -1168,14 +1168,12 @@ function closeSB(){ g('sidebar').classList.remove('open'); g('sb-ovl').classList
 // ── LOGOUT ─────────────────────────────────────────
 function logout(){
   UNSUBS.forEach(fn=>fn&&fn()); UNSUBS=[];
-  const wasSA = SA_MODE;
   ME=null; BID=null; SA_MODE=false;
   PRODS=[]; SALES=[]; NOTIFS=[]; STAFF=[]; BUYERS=[]; CUSTOMERS=[];
   pBuf=''; sBuf=''; pDots(); sDots();
   g('l-email').value=''; g('l-pass').value='';
   g('login-err').classList.add('h');
-  // Return SA to SA screen, staff to lock screen
-  if(wasSA){ show('sa-screen'); } else { show('lock-screen'); switchTab('login'); }
+  show('lock-screen'); switchTab('login');
 }
 
 function exitCtx(){
@@ -1301,7 +1299,7 @@ async function saveProd(){
     unitsPerPack:ups,
     buyerId:effectiveProdBID};
   try{
-    const col=db.collection('buyers').doc(effectiveProdBID).collection('products');
+    const col=db.collection('branches').doc(effectiveProdBID).collection('products');
     if(eid){ await col.doc(eid).update(data); }
     else{ await col.add({...data, dateAdded:firebase.firestore.FieldValue.serverTimestamp()}); addNotif('info','Product Added',name+' added to inventory.'); }
     closeM('prod-modal'); toast(eid?'Product updated!':'Product added!','s'); checkLowStock();
@@ -1313,7 +1311,7 @@ function openDelModal(id,name){ if(!can('del')){toast('⛔ No permission','e');r
 async function confirmDel(){
   if(!DEL_TGT||!BID)return;
   const delBID = BID || ME?.buyerId; if(!delBID)return;
-  try{ await db.collection('buyers').doc(delBID).collection('products').doc(DEL_TGT).delete(); closeM('del-modal'); DEL_TGT=null; toast('Product deleted','s'); }
+  try{ await db.collection('branches').doc(delBID).collection('products').doc(DEL_TGT).delete(); closeM('del-modal'); DEL_TGT=null; toast('Product deleted','s'); }
   catch(e){ toast('Delete failed: '+e.message,'e'); }
 }
 
@@ -1336,7 +1334,7 @@ async function saveStockAdj(){
   else newQty=qty;
   newQty=Math.round(newQty*100)/100;
   try{
-    await db.collection('buyers').doc(adjBID).collection('products').doc(pid).update({quantity:newQty});
+    await db.collection('branches').doc(adjBID).collection('products').doc(pid).update({quantity:newQty});
     addNotif('info','Stock Adjusted',p.name+': '+p.quantity+' → '+newQty+' '+(p.unitType||'units')+'. '+(reason||''));
     closeM('stock-modal'); toast('Stock updated → '+newQty+' '+(p.unitType||'units'),'s');
   }catch(e){ toast('Failed: '+e.message,'e'); }
@@ -1614,7 +1612,7 @@ async function saveSale(){
       const itemBillDisc = Math.round(billDiscPerItem*100)/100;
       const finalTotal   = Math.round((item.subtotal - itemBillDisc)*100)/100;
 
-      const saleRef = db.collection('buyers').doc(activeBID).collection('sales').doc();
+      const saleRef = db.collection('branches').doc(activeBID).collection('sales').doc();
       batch.set(saleRef, {
         productId:    item.productId,
         productName:  item.name,
@@ -1633,7 +1631,7 @@ async function saveSale(){
 
       // Deduct stock (supports decimal)
       batch.update(
-        db.collection('buyers').doc(activeBID).collection('products').doc(item.productId),
+        db.collection('branches').doc(activeBID).collection('products').doc(item.productId),
         {quantity: firebase.firestore.FieldValue.increment(-item.qty)}
       );
 
@@ -1645,7 +1643,7 @@ async function saveSale(){
     // Update customer purchase history
     if(custId){
       try{
-        await db.collection('buyers').doc(activeBID).collection('customers').doc(custId).update({
+        await db.collection('branches').doc(activeBID).collection('customers').doc(custId).update({
           lastPurchase: now,
           totalPurchases: firebase.firestore.FieldValue.increment(grandTotal),
           purchaseCount: firebase.firestore.FieldValue.increment(1)
@@ -1776,15 +1774,15 @@ function drawChart(cid, days, salesData){
 // ── NOTIFICATIONS ──────────────────────────────────
 async function addNotif(type,title,text){
   const notifBID = BID || ME?.buyerId; if(!notifBID)return;
-  try{ await db.collection('buyers').doc(notifBID).collection('notifications').add({type,title,text,time:firebase.firestore.FieldValue.serverTimestamp(),read:false,buyerId:notifBID}); }catch(e){console.warn('notif:',e);}
+  try{ await db.collection('branches').doc(notifBID).collection('notifications').add({type,title,text,time:firebase.firestore.FieldValue.serverTimestamp(),read:false,buyerId:notifBID}); }catch(e){console.warn('notif:',e);}
 }
 function renderNotifs(){
   const el=g('notif-list');
   el.innerHTML=NOTIFS.length?NOTIFS.map(n=>`<div class="ni ${n.read?'read':'unread'} ${n.type==='warn'?'warn':''}" onclick="markRead('${n.id}')"><div class="ni-icon" style="background:${n.type==='warn'?'rgba(245,158,11,.12)':'rgba(37,99,235,.1)'}">${n.type==='warn'?'⚠️':'ℹ️'}</div><div style="flex:1"><div class="ni-title">${esc(n.title)}</div><div class="ni-text">${esc(n.text)}</div><div class="ni-time">${tAgo(n.time)}</div></div>${!n.read?'<div class="ni-dot"></div>':''}</div>`).join('')
   :'<div class="empty"><div class="empty-icon">🔔</div><div class="empty-title">No alerts</div><div class="empty-sub">All caught up!</div></div>';
 }
-async function markRead(id){ const b=BID||ME?.buyerId; if(!b)return; try{ await db.collection('buyers').doc(b).collection('notifications').doc(id).update({read:true}); }catch(e){} }
-async function markAllRead(){ const b=BID||ME?.buyerId; if(!b)return; const batch=db.batch(); NOTIFS.filter(n=>!n.read).forEach(n=>batch.update(db.collection('buyers').doc(b).collection('notifications').doc(n.id),{read:true})); try{await batch.commit();toast('All read','s');}catch(e){} }
+async function markRead(id){ const b=BID||ME?.buyerId; if(!b)return; try{ await db.collection('branches').doc(b).collection('notifications').doc(id).update({read:true}); }catch(e){} }
+async function markAllRead(){ const b=BID||ME?.buyerId; if(!b)return; const batch=db.batch(); NOTIFS.filter(n=>!n.read).forEach(n=>batch.update(db.collection('branches').doc(b).collection('notifications').doc(n.id),{read:true})); try{await batch.commit();toast('All read','s');}catch(e){} }
 function checkLowStock(){ const cb=BID||ME?.buyerId; if(!cb)return; PRODS.filter(p=>p.quantity<=(p.lowAt||CFG.threshold)).forEach(p=>{ const exists=NOTIFS.some(n=>!n.read&&n.text?.includes(p.name)); if(!exists) addNotif('warn','Low Stock',p.name+' is low ('+p.quantity+' '+(p.unitType||'units')+').'); }); }
 function updBadges(){ const u=NOTIFS.filter(n=>!n.read).length; const ts=SALES.filter(s=>new Date(s.timestamp).toDateString()===new Date().toDateString()).length; g('sb-notif').textContent=u||''; g('sb-sales').textContent=ts||''; u>0?g('tb-ndot').classList.remove('h'):g('tb-ndot').classList.add('h'); }
 
@@ -1813,12 +1811,12 @@ async function saveStaff(){
   const data={name,email,role,phone,buyerId:effectiveBID};
   if(pass) data.password=pass;
   try{
-    const col=db.collection('buyers').doc(effectiveBID).collection('staff');
+    const col=db.collection('branches').doc(effectiveBID).collection('staff');
     if(eid){await col.doc(eid).update(data);}else{await col.add(data);}
     closeM('staff-modal'); toast(eid?'Staff updated!':'Staff added!','s');
   }catch(e){ferr('stm-err','Failed: '+e.message);}
 }
-async function removeStaff(id,name){ if(!confirm('Remove '+name+'?'))return; const b=BID||ME?.buyerId; if(!b)return; try{await db.collection('buyers').doc(b).collection('staff').doc(id).delete();toast('Staff removed','s');}catch(e){toast('Failed: '+e.message,'e');} }
+async function removeStaff(id,name){ if(!confirm('Remove '+name+'?'))return; const b=BID||ME?.buyerId; if(!b)return; try{await db.collection('branches').doc(b).collection('staff').doc(id).delete();toast('Staff removed','s');}catch(e){toast('Failed: '+e.message,'e');} }
 
 // ── CUSTOMERS ──────────────────────────────────────
 function genCustId(){
@@ -1894,7 +1892,7 @@ async function saveCustomer(){
   };
   if(!eid) data.customerId=genCustId();
   try{
-    const col=db.collection('buyers').doc(b).collection('customers');
+    const col=db.collection('branches').doc(b).collection('customers');
     if(eid){ await col.doc(eid).update(data); }
     else{ await col.add({...data, purchaseCount:0, totalPurchases:0, createdAt:firebase.firestore.FieldValue.serverTimestamp()}); }
     closeM('cust-modal'); toast(eid?'Customer updated!':'Customer added!','s');
@@ -1904,7 +1902,7 @@ async function saveCustomer(){
 async function deleteCust(id,name){
   if(!confirm('Delete customer "'+name+'"? Their purchase history links will remain in sales records.'))return;
   const b=BID||ME?.buyerId; if(!b)return;
-  try{ await db.collection('buyers').doc(b).collection('customers').doc(id).delete(); toast('Customer deleted','s'); }
+  try{ await db.collection('branches').doc(b).collection('customers').doc(id).delete(); toast('Customer deleted','s'); }
   catch(e){ toast('Failed: '+e.message,'e'); }
 }
 
@@ -1942,7 +1940,7 @@ async function renderBuyers(){
   g('buyers-sub').textContent=BUYERS.length+' registered branch'+(BUYERS.length!==1?'es':'');
   let totalP=0,totalS=0,totalR=0;
   const statsProms=BUYERS.map(async b=>{
-    const [ps,ss]=await Promise.all([db.collection('buyers').doc(b.id).collection('products').get(),db.collection('buyers').doc(b.id).collection('sales').get()]);
+    const [ps,ss]=await Promise.all([db.collection('branches').doc(b.id).collection('products').get(),db.collection('branches').doc(b.id).collection('sales').get()]);
     const rev=ss.docs.reduce((a,d)=>a+(d.data().total||0),0);
     totalP+=ps.size; totalS+=ss.size; totalR+=rev;
     return{id:b.id,prods:ps.size,sales:ss.size,rev};
@@ -1974,8 +1972,8 @@ async function renderBuyers(){
       </div>
       <div class="bc-btns">
         <button class="btn btn-b btn-sm" style="flex:2" onclick="enterBuyer('${b.id}')">🏢 Enter & Manage</button>
-        <button class="btn btn-o btn-sm" onclick="openBuyerModal('${b.id}')">✏️</button>
-        <button class="btn btn-r btn-sm" onclick="deleteBuyer('${b.id}','${esc(b.name)}')">🗑</button>
+        <button class="btn btn-o btn-sm" onclick="openBranchModal('${b.id}')">✏️</button>
+        <button class="btn btn-r btn-sm" onclick="deleteBranch('${b.id}','${esc(b.name)}')">🗑</button>
       </div>
       <div style="padding:0 12px 12px;font-size:.73rem;color:var(--t3)">Admin: <span>${esc(b.adminEmail)}</span></div>
     </div>`;
@@ -1984,15 +1982,7 @@ async function renderBuyers(){
 }
 
 async function enterBuyer(bid){
-  let buyer=BUYERS.find(b=>b.id===bid);
-  // If not in local array yet (e.g. just created), fetch from Firestore directly
-  if(!buyer){
-    try{
-      const doc = await db.collection('buyers').doc(bid).get();
-      if(doc.exists) buyer = {id:doc.id,...doc.data()};
-    }catch(e){ toast('Could not load branch: '+e.message,'e'); return; }
-  }
-  if(!buyer){ toast('Branch not found','e'); return; }
+  const buyer=BUYERS.find(b=>b.id===bid); if(!buyer)return;
   BID=bid;
   ME={id:'sa-in-buyer',name:'Super Admin',role:'admin',buyerId:bid};
   CFG={bizName:buyer.name,currency:buyer.currency||'₦',threshold:buyer.threshold||10,address:buyer.address||''};
@@ -2009,40 +1999,44 @@ async function enterBuyer(bid){
   toast('Entered '+buyer.name+' as Admin','s');
 }
 
-function openBuyerModal(id){
+function openBranchModal(id){
   g('bm-err').classList.add('h');
   if(id){const b=BUYERS.find(x=>x.id===id);if(!b)return;g('bm-t').textContent='Edit Branch';g('bm-id').value=id;g('bm-name').value=b.name;g('bm-email').value=b.adminEmail;g('bm-pass').value='';g('bm-pin').value=b.pin||'';g('bm-cur').value=b.currency||'₦';g('bm-type').value=b.type||'shop';g('bm-addr').value=b.address||'';}
   else{g('bm-t').textContent='Create Branch';g('bm-id').value='';['bm-name','bm-email','bm-pass','bm-pin','bm-addr'].forEach(f=>g(f).value='');g('bm-cur').value='₦';g('bm-type').value='shop';}
   openM('buyer-modal');
 }
-async function saveBuyer(){
+async function saveBranch(){
   const name=g('bm-name').value.trim(),email=g('bm-email').value.trim(),pass=g('bm-pass').value,pin=g('bm-pin').value.trim(),cur=g('bm-cur').value.trim()||'₦',type=g('bm-type').value,addr=g('bm-addr').value.trim(),eid=g('bm-id').value;
-  if(!name||!email)return ferr('bm-err','Name and email required.');
-  if(!eid&&!pass)return ferr('bm-err','Admin password required.');
-  if(pass&&pass.length<6)return ferr('bm-err','Password must be 6+ chars.');
-  // PIN is required for new branches so branch PIN login works
-  if(!eid&&!pin)return ferr('bm-err','Branch PIN is required (4 digits).');
-  if(pin&&!/^\d{4}$/.test(pin))return ferr('bm-err','PIN must be 4 digits.');
-  if(pin){const dup=await db.collection('buyers').where('pin','==',pin).get();if(!dup.empty&&(eid?dup.docs[0].id!==eid:true))return ferr('bm-err','PIN already used by another branch.');}
+  g('bm-err').classList.add('h');
+  if(!name||!email)return ferr('bm-err','Branch name and admin email are required.');
+  if(!eid&&!pass)return ferr('bm-err','Admin password is required for a new branch.');
+  if(pass&&pass.length<6)return ferr('bm-err','Password must be at least 6 characters.');
+  if(pin&&!/^\d{4}$/.test(pin))return ferr('bm-err','PIN must be exactly 4 digits (numbers only).');
+  // PIN uniqueness check — client-side scan (no Firestore index needed)
+  if(pin){
+    try{
+      const allSnap=await db.collection('branches').get();
+      const pinUsed=allSnap.docs.some(d=>d.id!==eid && String(d.data().pin||'')=== pin);
+      if(pinUsed) return ferr('bm-err','That PIN is already in use. Choose a different PIN.');
+    }catch(e){ return ferr('bm-err','Could not verify PIN: '+e.message); }
+  }
   const data={name,adminEmail:email,adminName:'Admin',pin:pin||'',currency:cur,type,address:addr,threshold:10};
   if(pass) data.adminPassword=pass;
   try{
-    let newBuyerId = eid;
     if(eid){
-      await db.collection('buyers').doc(eid).update(data);
-      closeM('buyer-modal'); toast('Branch updated!','s');
+      await db.collection('branches').doc(eid).update(data);
+      closeM('branch-modal'); toast('Branch updated!','s');
     } else {
-      const ref = await db.collection('buyers').add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-      newBuyerId = ref.id;
-      closeM('buyer-modal');
-      toast('Branch created! 🎉 Entering inventory…','s');
-      setTimeout(()=>enterBuyer(newBuyerId), 800);
+      const ref = await db.collection('branches').add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      closeM('branch-modal');
+      toast('Branch "'+name+'" created successfully! 🎉','s');
+      setTimeout(()=>enterBuyer(ref.id), 800);
     }
-  }catch(e){ferr('bm-err','Failed: '+e.message);}
+  }catch(e){ferr('bm-err','Save failed: '+e.message+' — Check your Firestore security rules.');}
 }
-async function deleteBuyer(id,name){
+async function deleteBranch(id,name){
   if(!confirm('Delete branch "'+name+'"? ALL their data will be deleted permanently!'))return;
-  try{await db.collection('buyers').doc(id).delete();toast('Branch deleted','s');}catch(e){toast('Failed: '+e.message,'e');}
+  try{await db.collection('branches').doc(id).delete();toast('Branch deleted','s');}catch(e){toast('Failed: '+e.message,'e');}
 }
 
 // ── SETTINGS ──────────────────────────────────────
@@ -2052,21 +2046,24 @@ async function saveSettings(){
   CFG.threshold=parseInt(g('set-thr').value)||10;
   CFG.address=g('set-addr').value.trim();
   const sb=BID||ME?.buyerId;
-  if(sb){try{await db.collection('buyers').doc(sb).update({name:CFG.bizName,currency:CFG.currency,threshold:CFG.threshold,address:CFG.address}); toast('Settings saved!','s');}catch(e){toast('Save failed: '+e.message,'e');}}
+  if(sb){try{await db.collection('branches').doc(sb).update({name:CFG.bizName,currency:CFG.currency,threshold:CFG.threshold,address:CFG.address}); toast('Settings saved!','s');}catch(e){toast('Save failed: '+e.message,'e');}}
   else toast('Settings saved locally','s');
 }
 
 async function changePIN(){
   if(!BID){toast('Enter a branch context first','e');return;}
-  const old=g('s-old').value,nw=g('s-new').value,cf=g('s-cf').value;
-  const buyer=BUYERS.find(b=>b.id===BID)||await db.collection('buyers').doc(BID).get().then(d=>d.data());
-  if(!buyer)return;
-  if(old!==(buyer.pin||''))return toast('Current PIN is incorrect','e');
-  if(!/^\d{4}$/.test(nw))return toast('PIN must be 4 digits','e');
+  const oldVal=g('s-old').value,nw=g('s-new').value,cf=g('s-cf').value;
+  const bdoc=await db.collection('branches').doc(BID).get();
+  if(!bdoc.exists){toast('Branch not found','e');return;}
+  const buyer=bdoc.data();
+  if(oldVal!==(buyer.pin||''))return toast('Current PIN is incorrect','e');
+  if(!/^\d{4}$/.test(nw))return toast('New PIN must be 4 digits','e');
   if(nw!==cf)return toast('PINs do not match','e');
-  const dup=await db.collection('buyers').where('pin','==',nw).get();
-  if(!dup.empty&&dup.docs[0].id!==BID)return toast('PIN already used by another branch','e');
-  try{await db.collection('buyers').doc(BID).update({pin:nw});g('s-old').value='';g('s-new').value='';g('s-cf').value='';toast('PIN updated!','s');}catch(e){toast('Failed: '+e.message,'e');}
+  // Check PIN uniqueness client-side
+  const allSnap=await db.collection('branches').get();
+  const pinUsed=allSnap.docs.some(d=>d.id!==BID && String(d.data().pin||'')=== nw);
+  if(pinUsed)return toast('That PIN is already used by another branch','e');
+  try{await db.collection('branches').doc(BID).update({pin:nw});g('s-old').value='';g('s-new').value='';g('s-cf').value='';toast('PIN updated!','s');}catch(e){toast('Failed: '+e.message,'e');}
 }
 
 async function changeSAPin(){
@@ -2083,7 +2080,7 @@ function updateProfile(){ const name=g('set-name').value.trim(); if(!name)return
 async function loadDemo(){
   if(!BID){toast('Enter a branch context first to load demo data','e');return;}
   if(!confirm('Add demo products & sales to this branch?'))return;
-  const col=db.collection('buyers').doc(BID);
+  const col=db.collection('branches').doc(BID);
   const DP=[
     {name:'Soft Drink Crate (24 bottles)',category:'Beverages',price:4800,costPrice:3600,quantity:10,sku:'BEV-001',supplier:'NBC',lowAt:3,unitType:'crate',unitsPerPack:24},
     {name:'Peak Milk Carton',category:'Dairy',price:6200,costPrice:5000,quantity:5,sku:'DAI-001',supplier:'FrieslandCampina',lowAt:2,unitType:'carton',unitsPerPack:12},
@@ -2132,6 +2129,17 @@ document.addEventListener('keydown',e=>{
   const appVis=!g('app').classList.contains('h');
   if(appVis&&e.key==='Enter'&&document.activeElement?.id==='l-pass')doLogin();
 });
+
+// ── FIRESTORE RULES CHECK ─────────────────────────
+// Make sure your Firestore rules in Firebase Console allow reads/writes.
+// For development, use:
+//   rules_version = '2';
+//   service cloud.firestore {
+//     match /databases/{database}/documents {
+//       match /{document=**} { allow read, write: if true; }
+//     }
+//   }
+// For production, tighten these rules after testing.
 
 console.log('%c Fujup Venture Inventory — Multi-Branch ✓','background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;padding:5px 12px;border-radius:5px;font-weight:700');
 </script>
