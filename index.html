@@ -816,7 +816,7 @@ tbody tr:hover{background:var(--bg)}
       <div class="fu fg2"><label class="fl">Branch Name *</label><input class="fc" id="bm-name" placeholder="Fujup Venture — Main Branch"/></div>
       <div class="fg2"><label class="fl">Admin Email *</label><input class="fc" type="email" id="bm-email" placeholder="admin@fujupventure.com"/></div>
       <div class="fg2"><label class="fl">Admin Password *</label><input class="fc" type="password" id="bm-pass" placeholder="Min 6 chars"/></div>
-      <div class="fg2"><label class="fl">Branch PIN (4 digits)</label><input class="fc" type="password" id="bm-pin" maxlength="4" placeholder="e.g. 1234"/></div>
+      <div class="fg2"><label class="fl">Branch PIN (4 digits) *</label><input class="fc" type="text" inputmode="numeric" id="bm-pin" maxlength="4" placeholder="e.g. 1234" autocomplete="off"/></div>
       <div class="fg2"><label class="fl">Currency</label><input class="fc" id="bm-cur" value="₦" maxlength="3"/></div>
       <div class="fg2"><label class="fl">Type</label>
         <select class="fc" id="bm-type">
@@ -948,6 +948,10 @@ applyDark();
 // ── INIT ──────────────────────────────────────────
 async function initApp(){
   try {
+    // Sign in anonymously so Firestore security rules allow reads/writes
+    await auth.signInAnonymously();
+  } catch(e){ console.warn('Anonymous auth:', e.message); }
+  try {
     const doc = await db.collection('system').doc('config').get();
     if(doc.exists && doc.data().sa_pin) SA_PIN = doc.data().sa_pin;
   } catch(e){ console.warn('SA pin load:', e.message); }
@@ -979,12 +983,18 @@ function pdel(){ pBuf=pBuf.slice(0,-1); pDots(); g('pin-err').classList.add('h')
 function pDots(){ for(let i=0;i<4;i++){const e=g('d'+i);if(!e)return;e.className='pd'+(i<pBuf.length?' on':'');} }
 async function pCheck(){
   try{
+    // Re-fetch SA_PIN from Firestore in case it was updated
+    try{
+      const cfgDoc = await db.collection('system').doc('config').get();
+      if(cfgDoc.exists && cfgDoc.data().sa_pin) SA_PIN = cfgDoc.data().sa_pin;
+    }catch(e){ console.warn('SA pin refresh:', e.message); }
+
     const snap = await db.collection('buyers').where('pin','==',pBuf).get();
     if(!snap.empty){
       const bdoc = snap.docs[0];
       const buyer = {id:bdoc.id,...bdoc.data()};
       BID = buyer.id;
-      ME  = {id:'buyer-admin-'+BID, name:buyer.adminName||'Admin', role:'admin', buyerId:BID};
+      ME  = {id:'buyer-admin-'+BID, name:buyer.adminName||buyer.name||'Admin', role:'admin', buyerId:BID};
       CFG = {bizName:buyer.name, currency:buyer.currency||'₦', threshold:buyer.threshold||10, address:buyer.address||''};
       show('app'); setupApp(); toast('Welcome to '+buyer.name+' 👋','s');
     } else {
@@ -1158,12 +1168,14 @@ function closeSB(){ g('sidebar').classList.remove('open'); g('sb-ovl').classList
 // ── LOGOUT ─────────────────────────────────────────
 function logout(){
   UNSUBS.forEach(fn=>fn&&fn()); UNSUBS=[];
+  const wasSA = SA_MODE;
   ME=null; BID=null; SA_MODE=false;
   PRODS=[]; SALES=[]; NOTIFS=[]; STAFF=[]; BUYERS=[]; CUSTOMERS=[];
   pBuf=''; sBuf=''; pDots(); sDots();
   g('l-email').value=''; g('l-pass').value='';
   g('login-err').classList.add('h');
-  show('lock-screen'); switchTab('login');
+  // Return SA to SA screen, staff to lock screen
+  if(wasSA){ show('sa-screen'); } else { show('lock-screen'); switchTab('login'); }
 }
 
 function exitCtx(){
@@ -1972,7 +1984,15 @@ async function renderBuyers(){
 }
 
 async function enterBuyer(bid){
-  const buyer=BUYERS.find(b=>b.id===bid); if(!buyer)return;
+  let buyer=BUYERS.find(b=>b.id===bid);
+  // If not in local array yet (e.g. just created), fetch from Firestore directly
+  if(!buyer){
+    try{
+      const doc = await db.collection('buyers').doc(bid).get();
+      if(doc.exists) buyer = {id:doc.id,...doc.data()};
+    }catch(e){ toast('Could not load branch: '+e.message,'e'); return; }
+  }
+  if(!buyer){ toast('Branch not found','e'); return; }
   BID=bid;
   ME={id:'sa-in-buyer',name:'Super Admin',role:'admin',buyerId:bid};
   CFG={bizName:buyer.name,currency:buyer.currency||'₦',threshold:buyer.threshold||10,address:buyer.address||''};
@@ -2000,6 +2020,8 @@ async function saveBuyer(){
   if(!name||!email)return ferr('bm-err','Name and email required.');
   if(!eid&&!pass)return ferr('bm-err','Admin password required.');
   if(pass&&pass.length<6)return ferr('bm-err','Password must be 6+ chars.');
+  // PIN is required for new branches so branch PIN login works
+  if(!eid&&!pin)return ferr('bm-err','Branch PIN is required (4 digits).');
   if(pin&&!/^\d{4}$/.test(pin))return ferr('bm-err','PIN must be 4 digits.');
   if(pin){const dup=await db.collection('buyers').where('pin','==',pin).get();if(!dup.empty&&(eid?dup.docs[0].id!==eid:true))return ferr('bm-err','PIN already used by another branch.');}
   const data={name,adminEmail:email,adminName:'Admin',pin:pin||'',currency:cur,type,address:addr,threshold:10};
