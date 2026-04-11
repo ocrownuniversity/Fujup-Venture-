@@ -973,44 +973,14 @@ function applyDark(){ document.documentElement.toggleAttribute('data-dark',DARK)
 function toggleDark(){ DARK=!DARK; localStorage.setItem('sp_dark',DARK?'1':'0'); applyDark(); }
 applyDark();
 
-// ── INIT ──────────────────────────────────────────
+// ── INIT: LOAD SA PIN FROM FIRESTORE ──────────────
 async function initApp(){
   try {
-    // Test write first to confirm Firestore is working
-    await db.collection('system').doc('config').set({ping:Date.now()},{merge:true});
-    // Then read SA PIN
     const doc = await db.collection('system').doc('config').get();
     if(doc.exists && doc.data().sa_pin) SA_PIN = doc.data().sa_pin;
-    g('loading').classList.add('h');
-    show('lock-screen');
-  } catch(e){
-    // Show exact error on screen so we know what's wrong
-    g('loading').innerHTML = `
-      <div style="max-width:460px;background:#fff;border-radius:16px;padding:28px;text-align:left">
-        <div style="font-size:1.1rem;font-weight:800;color:#DC2626;margin-bottom:10px">❌ Firebase Error</div>
-        <div style="font-size:.9rem;color:#374151;margin-bottom:16px;word-break:break-all;background:#FEF2F2;padding:12px;border-radius:8px;font-family:monospace">${e.message}</div>
-        <div style="font-size:.85rem;color:#6B7280;margin-bottom:16px">
-          Steps to fix:<br><br>
-          1. Go to <strong>console.firebase.google.com</strong><br>
-          2. Select <strong>fujup-ventures</strong><br>
-          3. Click <strong>Firestore Database</strong><br>
-          4. If you see "Create database" — click it, choose <strong>Start in test mode</strong>, click Done<br>
-          5. Click the <strong>Rules</strong> tab and paste:<br>
-        </div>
-        <div style="background:#0F1F45;color:#60A5FA;padding:12px;border-radius:8px;font-size:.8rem;font-family:monospace;margin-bottom:16px">
-rules_version = '2';<br>
-service cloud.firestore {<br>
-&nbsp;&nbsp;match /databases/{database}/documents {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;match /{document=**} {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if true;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;}<br>
-}
-        </div>
-        <div style="font-size:.85rem;color:#6B7280">6. Click <strong>Publish</strong> then refresh this page</div>
-        <button onclick="location.reload()" style="margin-top:16px;background:#2563EB;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;width:100%">🔄 Retry</button>
-      </div>`;
-  }
+  } catch(e){ console.warn('SA pin load:', e.message); }
+  g('loading').classList.add('h');
+  show('lock-screen');
 }
 initApp();
 
